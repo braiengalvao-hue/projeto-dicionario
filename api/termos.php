@@ -11,6 +11,24 @@ $categoria = isset($_GET['cat']) ? $conn->real_escape_string($_GET['cat']) : '';
 switch ($method) {
 
     case "GET":
+        // --- NOVO: BUSCA POR ID ÚNICO ---
+        if (isset($_GET['id'])) {
+            $id = (int)$_GET['id'];
+            $sql = "SELECT termos.*, turmas.nome_turma 
+                    FROM termos 
+                    INNER JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
+                    WHERE termos.id_termo = $id AND termos.status_termo = 'aprovado'";
+            
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+                echo json_encode(["success" => true, "data" => $result->fetch_assoc()]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Termo não encontrado."]);
+            }
+            exit;
+        }
+        
+        // ... (resto do seu código GET original que lista todos os termos)
         // Adicione isto logo abaixo do switch ($method) ou dentro do GET se preferir separar por um parâmetro
         if ($method === "GET" && isset($_GET['listar_turmas'])) {
             $sql = "SELECT id_turma, nome_turma FROM turmas ORDER BY nome_turma ASC";

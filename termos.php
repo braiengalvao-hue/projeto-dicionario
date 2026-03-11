@@ -2,7 +2,8 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Coesão - Dicionário Técnico</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicionário Técnico</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -10,17 +11,19 @@
 
     <header class="navbar_container">
         <div class="header_left_details">
-            <a href="portugues.php" class="btn_back"><i class="fa-solid fa-arrow-left"></i></a>
+            <a href="index.php" id="btn_voltar" class="btn_back">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
             <div class="header_title">
-                <div class="badge_category">Português</div>
-                <h1 class="term_main_title">Coesão</h1>
+                <div class="badge_category">Carregando...</div>
+                <h1 class="term_main_title">---</h1>
             </div>
         </div>
     </header>
 
     <main class="details_content">
         <div class="featured_image_container">
-            <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1000&auto=format&fit=crop" alt="Coesão" class="featured_image">
+            <img src="assets/images/icon_not_faund.svg" alt="Carregando" class="featured_image">
         </div>
 
         <section class="info_section">
@@ -29,7 +32,7 @@
                 <h2>Descrição</h2>
             </div>
             <div class="info_card">
-                <p>Propriedade que garante a conexão entre as partes de um texto, tornando-o um todo unificado e compreensível.</p>
+                <p>Buscando informações...</p>
             </div>
         </section>
 
@@ -39,7 +42,7 @@
                 <h2>Exemplo Prático</h2>
             </div>
             <div class="info_card bg_italic">
-                <p>O uso de conectivos como "portanto", "entretanto" e "além disso" garante a coesão textual.</p>
+                <p>Buscando exemplo...</p>
             </div>
         </section>
 
@@ -48,11 +51,68 @@
                 <i class="fa-regular fa-user"></i>
             </div>
             <div class="collab_info">
-                <p class="collab_name">Colaboração de: <strong>Ana Silva</strong></p>
-                <p class="collab_class">Turma: Técnico em Informática - 2A</p>
+                <p class="collab_name">Colaboração de: <strong>---</strong></p>
+                <p class="collab_class">Turma: ---</p>
             </div>
         </footer>
     </main>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const termoId = params.get('id');
+
+    if (!termoId) {
+        window.location.href = 'index.php';
+        return;
+    }
+
+    fetch(`api/termos.php?id=${termoId}`)
+        .then(response => response.json())
+        .then(res => {
+            if (res.success) {
+                const termo = res.data;
+
+                // 1. Título da Aba e do Cabeçalho
+                document.title = `${termo.nome_termo} - Dicionário Técnico`;
+                document.querySelector('.term_main_title').innerText = termo.nome_termo;
+
+                // 2. Categoria e Lógica do Botão Voltar
+                const badge = document.querySelector('.badge_category');
+                const btnVoltar = document.getElementById('btn_voltar');
+
+                if (termo.cat_termo === 'port') {
+                    badge.innerText = 'Português';
+                    btnVoltar.href = 'portugues.php'; // Se for português, volta para lista de português
+                } else {
+                    badge.innerText = 'Matemática';
+                    btnVoltar.href = 'matematica.php'; // Se for matemática, volta para lista de matemática
+                }
+                
+                // 3. Imagem
+                const imgElement = document.querySelector('.featured_image');
+                imgElement.src = termo.foto_termo ? termo.foto_termo : 'assets/images/icon_not_faund.svg';
+                imgElement.alt = termo.nome_termo;
+
+                // 4. Conteúdo (Descrição e Exemplo)
+                const cards = document.querySelectorAll('.info_card p');
+                cards[0].innerText = termo.descricao_termo;
+                cards[1].innerText = termo.exemplo_termo || "Nenhum exemplo prático fornecido para este termo.";
+
+                // 5. Rodapé (Aluno e Turma)
+                document.querySelector('.collab_name strong').innerText = termo.nome_aluno;
+                document.querySelector('.collab_class').innerText = `Turma: ${termo.nome_turma}`;
+                
+            } else {
+                alert('Termo não encontrado ou ainda pendente de aprovação.');
+                window.location.href = 'index.php';
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao conectar com o servidor.');
+        });
+});
+</script>
 </body>
 </html>
