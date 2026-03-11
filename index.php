@@ -24,7 +24,7 @@
         <p class="instruction_text">Selecione uma disciplina para começar</p>
 
         <div class="cards_wrapper">
-            <div class="card_item">
+            <div class="card_item" id="port">
                 <div class="icon_circle">
                     <i class="fa-solid fa-book-open"></i>
                 </div>
@@ -33,7 +33,7 @@
                 <a href="portugues.php" class="btn_access">Acessar <i class="fa-solid fa-arrow-right"></i></a>
             </div>
 
-            <div class="card_item">
+            <div class="card_item" id="mat">
                 <div class="icon_circle">
                     <i class="fa-solid fa-calculator"></i>
                 </div>
@@ -45,6 +45,17 @@
 
         <p class="footer_hint">Selecione uma disciplina para começar sua consulta</p>
     </main>
+<script>
+        let port = document.getElementById('port');
+        let mat = document.getElementById('mat');
 
+        port.addEventListener('click', function(){
+            window.location.href = 'portugues.php'; // Adicionado .href e corrigido para atribuição
+        });
+
+        mat.addEventListener('click', function(){
+            // window.location.href = 'matematica.php'; // Exemplo para o futuro
+        });
+</script>
 </body>
 </html>
