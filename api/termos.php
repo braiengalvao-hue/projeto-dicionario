@@ -3,13 +3,15 @@ session_start();
 require_once '../config/db.php'; 
 header('Content-Type: application/json');
 
-
 $method = $_SERVER["REQUEST_METHOD"];
+
+// Captura a categoria enviada pelo JS (ex: 'port' ou 'mat')
+$categoria = isset($_GET['cat']) ? $conn->real_escape_string($_GET['cat']) : '';
 
 switch ($method) {
 
     case "GET":
-        // SQL utilizando nomes completos das tabelas, sem abreviações
+        // Base da Query: Sempre filtra por 'aprovado' para segurança do front-end
         $sql = "SELECT 
                     termos.id_termo, 
                     termos.nome_termo, 
@@ -25,7 +27,14 @@ switch ($method) {
                 FROM termos 
                 INNER JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
                 LEFT JOIN usuarios ON termos.id_moderador = usuarios.id_usuario 
-                ORDER BY termos.data_criacao DESC";
+                WHERE termos.status_termo = 'aprovado'";
+
+        // Se o JavaScript passar ?cat=port ou ?cat=mat, adicionamos o filtro
+        if ($categoria !== '') {
+            $sql .= " AND termos.cat_termo = '$categoria'";
+        }
+
+        $sql .= " ORDER BY termos.nome_termo ASC";
 
         $result = $conn->query($sql);
         $termos = [];
@@ -52,13 +61,13 @@ switch ($method) {
 
         $nome_termo = $conn->real_escape_string($data->nome_termo);
         $descricao = $conn->real_escape_string($data->descricao_termo);
-        $categoria = $conn->real_escape_string($data->cat_termo); 
+        $categoria_post = $conn->real_escape_string($data->cat_termo); 
         $nome_aluno = $conn->real_escape_string($data->nome_aluno);
         $id_turma = (int) $data->turmas_id_turma;
 
-        // Inserção explícita nas colunas da tabela termos
+        // Ao inserir via formulário de aluno, o status padrão é 'pendente'
         $sql = "INSERT INTO termos (nome_termo, descricao_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo) 
-                VALUES ('$nome_termo', '$descricao', '$categoria', '$nome_aluno', $id_turma, 'pendente')";
+                VALUES ('$nome_termo', '$descricao', '$categoria_post', '$nome_aluno', $id_turma, 'pendente')";
 
         if ($conn->query($sql) === TRUE) {
             echo json_encode(["success" => true, "id_termo" => $conn->insert_id]);
@@ -68,27 +77,16 @@ switch ($method) {
         break;
 
     case "PUT":
-
         if (!isset($_SESSION['id_usuario'])) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Acesso negado."
-    ]);
-    exit;
- }
-
-        $data = json_decode(file_get_contents("php://input"));
-
-        if (!isset($data->id_termo)) {
-            echo json_encode(["success" => false, "message" => "ID não informado."]);
+            echo json_encode(["success" => false, "message" => "Acesso negado."]);
             exit;
         }
 
+        $data = json_decode(file_get_contents("php://input"));
         $id_termo = (int) $data->id_termo;
         $status = $conn->real_escape_string($data->status_termo);
         $id_moderador = (int) $_SESSION['id_usuario'];
 
-        // Update utilizando nomes completos para clareza
         $sql = "UPDATE termos 
                 SET termos.status_termo = '$status', 
                     termos.id_moderador = $id_moderador, 
@@ -103,17 +101,12 @@ switch ($method) {
         break;
 
     case "DELETE":
-
         if (!isset($_SESSION['id_usuario'])) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Acesso negado."
-    ]);
-    exit;
-}
+            echo json_encode(["success" => false, "message" => "Acesso negado."]);
+            exit;
+        }
         $data = json_decode(file_get_contents("php://input"));
         $id_termo = (int) $data->id_termo;
-
         $sql = "DELETE FROM termos WHERE termos.id_termo = $id_termo";
 
         if ($conn->query($sql) === TRUE) {

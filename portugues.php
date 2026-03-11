@@ -59,6 +59,69 @@
     <button class="fab_button">
         <i class="fa-solid fa-plus"></i>
     </button>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const listContainer = document.querySelector('.list_container');
+    const searchInput = document.querySelector('.search_box input');
+    const termCountText = document.querySelector('.title_group span');
 
+    // Função para carregar os termos filtrados por Português e Aprovados
+    function carregarTermos() {
+        // Envia o parâmetro 'cat=port' para o PHP filtrar
+        fetch('api/termos.php?cat=port')
+            .then(response => response.json())
+            .then(resultado => {
+                if (resultado.success && resultado.data.length > 0) {
+                    renderizarLista(resultado.data);
+                    termCountText.innerText = `${resultado.data.length} termos disponíveis`;
+                } else {
+                    listContainer.innerHTML = '<p style="padding:20px; text-align:center;">Nenhum termo aprovado encontrado para esta categoria.</p>';
+                    termCountText.innerText = `0 termos disponíveis`;
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                listContainer.innerHTML = '<p style="padding:20px; text-align:center;">Erro na ligação ao servidor.</p>';
+            });
+    }
+
+    function renderizarLista(termos) {
+        listContainer.innerHTML = ''; 
+
+        termos.forEach(termo => {
+            // Se não houver foto, usa o ícone padrão
+            const imagem = termo.foto_termo ? termo.foto_termo : 'assets/images/icon_not_faund.svg';
+
+            const card = `
+                <div class="term_card" data-nome="${termo.nome_termo.toLowerCase()}">
+                    <img src="${imagem}" alt="${termo.nome_termo}" class="term_image">
+                    <div class="term_info">
+                        <h3>${termo.nome_termo}</h3>
+                        <p>${termo.descricao_termo}</p>
+                    </div>
+                    <a href="detalhes_termo.php?id=${termo.id_termo}">
+                        <i class="fa-solid fa-arrow-right arrow_icon"></i>
+                    </a>
+                </div>
+            `;
+            listContainer.insertAdjacentHTML('beforeend', card);
+        });
+    }
+
+    // Filtro de busca em tempo real no front-end
+    searchInput.addEventListener('input', function() {
+        const busca = this.value.toLowerCase();
+        const cards = document.querySelectorAll('.term_card');
+        
+        cards.forEach(card => {
+            const nome = card.getAttribute('data-nome');
+            card.style.display = nome.includes(busca) ? 'flex' : 'none';
+        });
+    });
+
+    carregarTermos();
+});
+
+</script>
 </body>
 </html>
