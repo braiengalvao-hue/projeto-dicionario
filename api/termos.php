@@ -5,6 +5,7 @@ header('Content-Type: application/json');
 
 
 $method = $_SERVER["REQUEST_METHOD"];
+$filtro = isset($_GET['filtro']) ? $_GET['filtro'] : '';
 
 switch ($method) {
 
@@ -70,12 +71,12 @@ switch ($method) {
     case "PUT":
 
         if (!isset($_SESSION['id_usuario'])) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Acesso negado."
-    ]);
-    exit;
- }
+            echo json_encode([
+                "success" => false,
+                "message" => "Acesso negado."
+            ]);
+            exit;
+        }
 
         $data = json_decode(file_get_contents("php://input"));
 
@@ -105,12 +106,12 @@ switch ($method) {
     case "DELETE":
 
         if (!isset($_SESSION['id_usuario'])) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Acesso negado."
-    ]);
-    exit;
-}
+            echo json_encode([
+                "success" => false,
+                "message" => "Acesso negado."
+            ]);
+            exit;
+        }
         $data = json_decode(file_get_contents("php://input"));
         $id_termo = (int) $data->id_termo;
 
