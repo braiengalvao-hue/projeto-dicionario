@@ -2,55 +2,57 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Dicionário de Português</title>
+    <title>Coesão - Dicionário Técnico</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-</head>
 <body>
 
-    <header class="sticky_header">
-        <div class="header_left">
-            <a href="index.php" class="btn_back"><i class="fa-solid fa-arrow-left"></i></a>
-            <div class="icon_circle_small">
-                <i class="fa-solid fa-book-open"></i>
+    <header class="navbar_container">
+        <div class="header_left_details">
+            <a href="portugues." class="btn_back"><i class="fa-solid fa-arrow-left"></i></a>
+            <div class="header_title">
+                <div class="badge_category">Português</div>
+                <h1 class="term_main_title">Coesão</h1>
             </div>
-            <div class="title_group">
-                <h1 style="font-size: 20px;">Dicionário de Português</h1>
-                <span style="font-size: 13px; color: var(--text_muted);">5 termos disponíveis</span>
-            </div>
-        </div>
-        
-        <div class="search_box">
-            <i class="fa-solid fa-magnifying-glass" style="color: var(--text_muted);"></i>
-            <input type="text" placeholder="Buscar termo...">
         </div>
     </header>
 
-    <main style="padding: 40px 10%;">
-        <div class="term_card">
-            <img src="https://via.placeholder.com/100x70" class="term_image">
-            <div class="term_info">
-                <h3>Coesão</h3>
+    <main class="details_content">
+        <div class="featured_image_container">
+            <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1000&auto=format&fit=crop" alt="Coesão" class="featured_image">
+        </div>
+
+        <section class="info_section">
+            <div class="section_title_wrapper">
+                <span class="blue_indicator"></span>
+                <h2>Descrição</h2>
+            </div>
+            <div class="info_card">
                 <p>Propriedade que garante a conexão entre as partes de um texto, tornando-o um todo unificado e compreensível.</p>
             </div>
-            <i class="fa-solid fa-arrow-right" style="color: var(--border_gray); font-size: 12px;"></i>
-        </div>
+        </section>
 
-        <div class="term_card">
-            <img src="https://via.placeholder.com/100x70" class="term_image">
-            <div class="term_info">
-                <h3>Predicado</h3>
-                <p>Tudo aquilo que se declara sobre o sujeito da oração, contendo obrigatoriamente um verbo ou locução verbal.</p>
+        <section class="info_section">
+            <div class="section_title_wrapper">
+                <span class="blue_indicator"></span>
+                <h2>Exemplo Prático</h2>
             </div>
-            <a href="termos.php"><i class="fa-solid fa-arrow-right" style="color: var(--border_gray); font-size: 12px;"></i>
-</a>
-        </div>
-    </main>
+            <div class="info_card bg_italic">
+                <p>O uso de conectivos como "portanto", "entretanto" e "além disso" garante a coesão textual.</p>
+            </div>
+        </section>
 
-    <button class="fab_button">
-        <i class="fa-solid fa-plus"></i>
-    </button>
+        <footer class="collab_footer">
+            <div class="collab_icon">
+                <i class="fa-regular fa-user"></i>
+            </div>
+            <div class="collab_info">
+                <p class="collab_name">Colaboração de: <strong>Ana Silva</strong></p>
+                <p class="collab_class">Turma: Técnico em Informática - 2A</p>
+            </div>
+        </footer>
+    </main>
 
 </body>
 </html>
