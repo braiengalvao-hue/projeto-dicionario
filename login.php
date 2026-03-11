@@ -46,6 +46,62 @@
                             </form>
         </div>
     </main>
+<script>
+document.querySelector('.login_form').addEventListener('submit', function(e) {
+    e.preventDefault(); // Impede a página de recarregar
 
+    // Captura os valores dos inputs
+    const login = document.getElementById('email').value;
+    const senha = document.getElementById('password').value;
+    const btn = document.querySelector('.btn_login');
+
+    // Feedback visual de carregamento
+    btn.innerText = "Verificando...";
+    btn.disabled = true;
+
+    // Envia os dados para a API
+    fetch('api/autch.php?action=login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            login_usuario: login,
+            senha_usuario: senha
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Login bem-sucedido: Salva o nome no localStorage (opcional) e redireciona
+            localStorage.setItem('nome_professor', data.user.nome);
+            window.location.href = 'admin_painel.php'; 
+        } else {
+            // Erro no login (senha errada ou usuário não existe)
+            alert(data.message);
+            btn.innerText = "Entrar";
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Erro na requisição:', error);
+        alert('Erro ao conectar com o servidor.');
+        btn.innerText = "Entrar";
+        btn.disabled = false;
+    });
+});
+
+// Lógica para mostrar/esconder senha (ícone do olho)
+document.querySelector('.eye_icon').addEventListener('click', function() {
+    const input = document.getElementById('password');
+    if (input.type === 'password') {
+        input.type = 'text';
+        this.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        this.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+});
+</script>
 </body>
 </html>
