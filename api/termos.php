@@ -11,7 +11,6 @@ $categoria = isset($_GET['cat']) ? $conn->real_escape_string($_GET['cat']) : '';
 switch ($method) {
 
     case "GET":
-        // Base da Query: Sempre filtra por 'aprovado' para segurança do front-end
         $sql = "SELECT 
                     termos.id_termo, 
                     termos.nome_termo, 

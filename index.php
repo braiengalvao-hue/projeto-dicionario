@@ -14,7 +14,7 @@
             <h1 class="logo_title">Dicionário Técnico</h1>
             <p class="logo_subtitle">Sistema de Consulta Técnica</p>
         </div>
-        <a href="#" class="login_professor">
+        <a href="login.php" class="login_professor">
             <i class="fa-solid fa-lock"></i> Entrar como Professor
         </a>
     </header>
