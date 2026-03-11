@@ -85,28 +85,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    function renderizarLista(termos) {
-        listContainer.innerHTML = ''; 
+   function renderizarLista(termos) {
+    listContainer.innerHTML = ''; 
 
-        termos.forEach(termo => {
-            // Se não houver foto, usa o ícone padrão
-            const imagem = termo.foto_termo ? termo.foto_termo : 'assets/images/icon_not_faund.svg';
+    termos.forEach(termo => {
+        const imagem = termo.foto_termo ? termo.foto_termo : 'assets/images/icon_not_faund.svg';
 
-            const card = `
-                <div class="term_card" data-nome="${termo.nome_termo.toLowerCase()}">
-                    <img src="${imagem}" alt="${termo.nome_termo}" class="term_image">
-                    <div class="term_info">
-                        <h3>${termo.nome_termo}</h3>
-                        <p>${termo.descricao_termo}</p>
-                    </div>
-                    <a href="detalhes_termo.php?id=${termo.id_termo}">
-                        <i class="fa-solid fa-arrow-right arrow_icon"></i>
-                    </a>
+        // Criamos o HTML do card
+        const cardHTML = `
+            <div class="term_card" 
+                 data-nome="${termo.nome_termo.toLowerCase()}" 
+                 onclick="window.location.href='termos.php?id=${termo.id_termo}'" 
+                 style="cursor: pointer;">
+                
+                <img src="${imagem}" alt="${termo.nome_termo}" class="term_image">
+                
+                <div class="term_info">
+                    <h3>${termo.nome_termo}</h3>
+                    <p>${termo.descricao_termo}</p>
                 </div>
-            `;
-            listContainer.insertAdjacentHTML('beforeend', card);
-        });
-    }
+                
+                <i class="fa-solid fa-arrow-right arrow_icon"></i>
+            </div>
+        `;
+        listContainer.insertAdjacentHTML('beforeend', cardHTML);
+    });
+}
 
     // Filtro de busca em tempo real no front-end
     searchInput.addEventListener('input', function() {

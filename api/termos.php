@@ -11,6 +11,17 @@ $categoria = isset($_GET['cat']) ? $conn->real_escape_string($_GET['cat']) : '';
 switch ($method) {
 
     case "GET":
+        // Adicione isto logo abaixo do switch ($method) ou dentro do GET se preferir separar por um parâmetro
+        if ($method === "GET" && isset($_GET['listar_turmas'])) {
+            $sql = "SELECT id_turma, nome_turma FROM turmas ORDER BY nome_turma ASC";
+            $result = $conn->query($sql);
+            $turmas = [];
+            while ($row = $result->fetch_assoc()) {
+                $turmas[] = $row;
+            }
+            echo json_encode(["success" => true, "data" => $turmas]);
+            exit;
+        }
         $sql = "SELECT 
                     termos.id_termo, 
                     termos.nome_termo, 
@@ -50,30 +61,33 @@ switch ($method) {
         ]);
         break;
 
-    case "POST":
-        $data = json_decode(file_get_contents("php://input"));
+        
 
-        if (!isset($data->nome_termo) || !isset($data->descricao_termo) || !isset($data->turmas_id_turma)) {
-            echo json_encode(["success" => false, "message" => "Dados incompletos."]);
-            exit;
-        }
+        case "POST":
+                $data = json_decode(file_get_contents("php://input"));
 
-        $nome_termo = $conn->real_escape_string($data->nome_termo);
-        $descricao = $conn->real_escape_string($data->descricao_termo);
-        $categoria_post = $conn->real_escape_string($data->cat_termo); 
-        $nome_aluno = $conn->real_escape_string($data->nome_aluno);
-        $id_turma = (int) $data->turmas_id_turma;
+                if (!isset($data->nome_termo) || !isset($data->descricao_termo) || !isset($data->turmas_id_turma)) {
+                    echo json_encode(["success" => false, "message" => "Dados incompletos."]);
+                    exit;
+                }
 
-        // Ao inserir via formulário de aluno, o status padrão é 'pendente'
-        $sql = "INSERT INTO termos (nome_termo, descricao_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo) 
-                VALUES ('$nome_termo', '$descricao', '$categoria_post', '$nome_aluno', $id_turma, 'pendente')";
+                $nome_termo = $conn->real_escape_string($data->nome_termo);
+                $descricao = $conn->real_escape_string($data->descricao_termo);
+                $exemplo = isset($data->exemplo_termo) ? $conn->real_escape_string($data->exemplo_termo) : ''; // NOVO
+                $categoria_post = $conn->real_escape_string($data->cat_termo); 
+                $nome_aluno = $conn->real_escape_string($data->nome_aluno);
+                $id_turma = (int) $data->turmas_id_turma;
 
-        if ($conn->query($sql) === TRUE) {
-            echo json_encode(["success" => true, "id_termo" => $conn->insert_id]);
-        } else {
-            echo json_encode(["success" => false, "message" => $conn->error]);
-        }
-        break;
+                // Inserção incluindo o campo exemplo_termo
+                $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo) 
+                        VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_aluno', $id_turma, 'pendente')";
+
+                if ($conn->query($sql) === TRUE) {
+                    echo json_encode(["success" => true, "id_termo" => $conn->insert_id]);
+                } else {
+                    echo json_encode(["success" => false, "message" => $conn->error]);
+                }
+                break;
 
     case "PUT":
         if (!isset($_SESSION['id_usuario'])) {

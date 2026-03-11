@@ -11,7 +11,7 @@
 
     <header class="sticky_header">
         <div class="header_left">
-            <a href="portugues.html" class="btn_back"><i class="fa-solid fa-arrow-left"></i></a>
+            <button onclick="history.back()" class="btn_back"><i class="fa-solid fa-arrow-left"></i></button>
             <div class="title_group">
                 <h1>Sugerir Novo Termo</h1>
                 <p class="subtitle_header">Contribua com o dicionário técnico</p>
@@ -20,7 +20,7 @@
     </header>
 
     <main class="form_container_desktop">
-        <form action="#" method="POST">
+        <form id="cadastroTermo">
             <section class="form_section_card">
                 <h2 class="section_title_form">Suas Informações</h2>
                 
@@ -29,10 +29,13 @@
                         <label>Seu Nome *</label>
                         <input type="text" placeholder="Digite seu nome completo" required>
                     </div>
-                    <div class="input_group">
-                        <label>Sua Turma *</label>
-                        <input type="text" placeholder="Ex: Técnico em Informática - 2A" required>
-                    </div>
+                <div class="input_group">
+                    <label>Sua Turma</label>
+                    <select name="turmas_id_turma" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: white;">
+                        <option value="" disabled selected>Selecione sua turma</option>
+                        <option value="1">6º ano</option>
+                    </select>
+                </div>
                 </div>
             </section>
 
@@ -80,7 +83,7 @@
             </section>
 
             <div class="form_actions_footer">
-                <button type="button" class="btn_cancel">Cancelar</button>
+                <button type="button" onclick="history.back()" class="btn_cancel">Cancelar</button>
                 <button type="submit" class="btn_submit_form">
                     <i class="fa-solid fa-paper-plane"></i> Enviar para Revisão
                 </button>
@@ -88,5 +91,69 @@
         </form>
     </main>
 
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectTurma = document.querySelector('select[name="turmas_id_turma"]');
+
+    // --- PARTE NOVA: BUSCAR TURMAS NO BANCO ---
+    fetch('api/termos.php?listar_turmas=true')
+        .then(response => response.json())
+        .then(resultado => {
+            if (resultado.success) {
+                // Limpa o "Carregando..." e mantém apenas a primeira opção desabilitada
+                selectTurma.innerHTML = '<option value="" disabled selected>Selecione sua turma</option>';
+                
+                resultado.data.forEach(turma => {
+                    const option = `<option value="${turma.id_turma}">${turma.nome_turma}</option>`;
+                    selectTurma.insertAdjacentHTML('beforeend', option);
+                });
+            }
+        })
+        .catch(err => console.error("Erro ao carregar turmas:", err));
+
+
+    // --- PARTE DE ENVIO DO FORMULÁRIO ---
+    document.getElementById('cadastroTermo').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const btnSubmit = document.querySelector('.btn_submit_form');
+        
+        // Captura os dados
+        const dados = {
+            nome_aluno: document.querySelector('input[placeholder="Digite seu nome completo"]').value,
+            turmas_id_turma: selectTurma.value,
+            nome_termo: document.querySelector('input[placeholder="Digite o termo técnico"]').value,
+            cat_termo: document.querySelector('input[name="disciplina"]:checked').value === 'portugues' ? 'port' : 'mat',
+            descricao_termo: document.querySelector('textarea[placeholder^="Explique"]').value,
+            exemplo_termo: document.querySelector('textarea[placeholder^="Forneça"]').value
+        };
+
+        if(!dados.turmas_id_turma) {
+            alert("Por favor, selecione uma turma.");
+            return;
+        }
+
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+        fetch('api/termos.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Sugestão enviada! Aguarde a revisão do professor.');
+                window.location.href = 'index.php';
+            } else {
+                alert('Erro: ' + data.message);
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar para Revisão';
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

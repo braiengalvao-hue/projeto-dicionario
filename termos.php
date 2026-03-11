@@ -10,7 +10,7 @@
 
     <header class="navbar_container">
         <div class="header_left_details">
-            <a href="portugues." class="btn_back"><i class="fa-solid fa-arrow-left"></i></a>
+            <a href="portugues.php" class="btn_back"><i class="fa-solid fa-arrow-left"></i></a>
             <div class="header_title">
                 <div class="badge_category">Português</div>
                 <h1 class="term_main_title">Coesão</h1>
