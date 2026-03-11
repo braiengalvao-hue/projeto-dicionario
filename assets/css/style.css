@@ -304,3 +304,276 @@ body {
     align-items: center;
     justify-content: center;
 }
+
+/* --- ESTILOS DA PÁGINA DE DETALHES --- */
+
+.header_left_details {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header_title{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-left: 10%;
+}
+
+.badge_category {
+    background-color: var(--primary_blue);
+    color: var(--white);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.term_main_title {
+    font-size: 24px;
+    color: var(--text_dark);
+    font-weight: 700;
+}
+
+.details_content {
+    max-width: 90%;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Imagem Arredondada */
+.featured_image_container {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.featured_image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 24px; /* Bem arredondada como na foto */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* Seções de Texto */
+.info_section {
+    margin-bottom: 25px;
+    border: 1px solid var(--border_gray);
+    padding: 12px 10px;
+    border-radius: 8px;
+}
+
+.section_title_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.blue_indicator {
+    width: 5px;
+    height: 24px;
+    background-color: var(--primary_blue);
+    border-radius: 4px;
+}
+
+.section_title_wrapper h2 {
+    font-size: 20px;
+    color: var(--text_dark);
+}
+
+.info_card {
+    background-color: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    color: var(--text_muted);
+    line-height: 1.6;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.bg_italic p {
+    font-style: italic;
+}
+
+/* Colaborador */
+.collab_footer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: #F9FAFB;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-top: 40px;
+}
+
+.collab_icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--bg_light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary_blue);
+}
+
+.collab_name {
+    font-size: 14px;
+    color: var(--text_dark);
+}
+
+.collab_class {
+    font-size: 13px;
+    color: var(--text_muted);
+}
+
+/* --- ESTILOS DA PÁGINA DE LOGIN (VERSÃO FINAL) --- */
+
+/* Fundo azul e reset para ocupar a tela toda */
+.bg_admin {
+    background-color: var(--primary_blue);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; /* Organiza header em cima e container no resto */
+    position: relative;
+}
+
+/* Header: Alinhado à esquerda conforme solicitado */
+.header_login {
+    width: 100%;
+    padding: 30px 60px; /* Mesma margem da navbar inicial */
+    box-sizing: border-box;
+}
+
+.btn_back_login {
+    text-decoration: none;
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+}
+
+.btn_back_login:hover {
+    opacity: 0.8;
+}
+
+/* Container Flex para centralizar o Card no meio exato da tela */
+.login_container_flex {
+    flex: 1; /* Ocupa todo o espaço restante abaixo do header */
+    display: flex;
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    padding: 20px;
+}
+
+/* O Card Branco */
+.login_card {
+    background-color: var(--white);
+    width: 40%;
+    padding: 40px;
+    border-radius: 24px; /* Bordas arredondadas conforme os outros cards */
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.icon_circle_login {
+    width: 56px;
+    height: 56px;
+    background-color: var(--bg_light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    color: var(--primary_blue);
+    font-size: 22px;
+}
+
+/* Inputs e Formulário */
+.login_form {
+    text-align: left;
+    margin-top: 5%;
+}
+
+.input_group {
+    margin-bottom: 20px;
+}
+
+.input_group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text_dark);
+}
+
+.input_wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input_wrapper i:not(.eye_icon) {
+    position: absolute;
+    left: 16px;
+    color: #94a3b8;
+}
+
+.input_wrapper input {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background-color: #F9FAFB;
+    font-size: 14px;
+    outline: none;
+}
+
+.input_wrapper input:focus {
+    border-color: var(--primary_blue); /* Remova o '1px solid' daqui */
+    background-color: var(--white);
+    outline: none; /* Isso remove aquela borda preta padrão do navegador */
+}
+
+.eye_icon {
+    position: absolute;
+    right: 16px;
+    color: var(--text_muted);
+    cursor: pointer;
+}
+
+/* Botão de Ação */
+.btn_login {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--primary_blue);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: transform 0.1s;
+}
+
+.btn_login:active {
+    transform: scale(0.98);
+}
+
+.forgot_password {
+    display: block;
+    text-align: center;
+    margin-top: 24px;
+    color: var(--primary_blue);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
