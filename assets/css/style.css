@@ -25,7 +25,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 20px 60px;
-    border-bottom: 1px solid var(--border); 
+    border-bottom: 1px solid var(--border_gray); 
 }
 
 .logo_title {
@@ -303,6 +303,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
 }
 
 /* --- ESTILOS DA PÁGINA DE DETALHES --- */
@@ -429,7 +430,7 @@ body {
     color: var(--text_muted);
 }
 
-/* --- ESTILOS DA PÁGINA DE LOGIN (VERSÃO FINAL) --- */
+/* --- ESTILOS DA PÁGINA DE LOGIN --- */
 
 /* Fundo azul e reset para ocupar a tela toda */
 .bg_admin {
@@ -576,4 +577,160 @@ body {
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;
+}
+
+/* --- ESTILOS DA PÁGINA DE FORMULÁRIO --- */
+
+.bg_light_page {
+    background-color: #F9FAFB;
+}
+
+.subtitle_header {
+    font-size: 14px;
+    color: var(--text_muted);
+}
+
+.form_container_desktop {
+    max-width: 800px; /* Limita a largura para leitura confortável no Desktop */
+    margin: 40px auto;
+    padding: 0 20px 80px;
+}
+
+.form_section_card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.section_title_form {
+    font-size: 18px;
+    color: var(--text_dark);
+    margin-bottom: 24px;
+    font-weight: 700;
+}
+
+/* Grid de 2 colunas para Nome e Turma no Desktop */
+.form_grid_2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.input_group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border_gray);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+/* Estilo do Radio Button */
+.radio_group_horizontal {
+    display: flex;
+    gap: 20px;
+    margin-top: 5px;
+}
+
+.radio_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Área de Upload */
+.upload_area_desktop {
+    border: 2px dashed var(--border_gray);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upload_area_desktop:hover {
+    border-color: var(--primary_blue);
+    background-color: rgba(30, 58, 138, 0.02);
+}
+
+.upload_area_desktop i {
+    font-size: 32px;
+    color: var(--primary_blue);
+    margin-bottom: 12px;
+}
+
+.upload_area_desktop p {
+    font-weight: 500;
+    color: var(--text_dark);
+    margin-bottom: 4px;
+}
+
+.upload_area_desktop span {
+    font-size: 12px;
+    color: var(--text_muted);
+}
+
+/* Botões Inferiores */
+.form_actions_footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.btn_cancel {
+    padding: 12px 24px;
+    background: var(--white);
+    border: 1px solid var(--border_gray);
+    border-radius: 10px;
+    color: var(--text_dark);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn_submit_form {
+    padding: 12px 32px;
+    background-color: var(--primary_blue);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.btn_submit_form:hover {
+    filter: brightness(1.2);
+}
+
+.input_group input[type="text"],
+.input_group input[type="email"],
+.input_group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background-color: #F9FAFB; /* Cor de fundo clarinha do design */
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    outline: none;
+    box-sizing: border-box; /* Garante que o padding não aumente o tamanho final */
+}
+
+/* Efeito de Foco Corrigido (sem o '1px solid' que causava erro) */
+.input_group input:focus,
+.input_group textarea:focus {
+    border-color: var(--primary_blue);
+    background-color: var(--white);
+    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1); /* Efeito de brilho azul */
 }

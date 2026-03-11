@@ -56,9 +56,9 @@
             </div>
     </main>
 
-    <button class="fab_button">
+    <a class="fab_button" href="adicionar_termo.php">
         <i class="fa-solid fa-plus"></i>
-    </button>
+    </a>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const listContainer = document.querySelector('.list_container');

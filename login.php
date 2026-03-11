@@ -10,7 +10,7 @@
 <body class="bg_admin">
 
     <header class="header_login">
-        <a href="index.html" class="btn_back_login">
+        <a href="index.php" class="btn_back_login">
             <i class="fa-solid fa-arrow-left"></i> Voltar ao início
         </a>
     </header>
