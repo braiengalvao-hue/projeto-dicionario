@@ -17,7 +17,7 @@
                     <i class="fa-solid fa-book-open"></i>
                 </div>
                 <div class="title_group">
-                    <h1>Dicionário de Português</h1>
+                    <h1>Dicionário de Matemática</h1>
                     <span>5 termos disponíveis</span>
                 </div>
             </div>
@@ -67,14 +67,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Função para carregar os termos filtrados por Português e Aprovados
     function carregarTermos() {
-        fetch('api/termos.php?cat=port')
+        // Envia o parâmetro 'cat=port' para o PHP filtrar
+        fetch('api/termos.php?cat=mat')
             .then(response => response.json())
             .then(resultado => {
                 if (resultado.success && resultado.data.length > 0) {
                     renderizarLista(resultado.data);
                     termCountText.innerText = `${resultado.data.length} termos disponíveis`;
                 } else {
-                    listContainer.innerHTML = '<p style="padding:20px; text-align:center;">Nenhum termo aprovado encontrado.</p>';
+                    listContainer.innerHTML = '<p style="padding:20px; text-align:center;">Nenhum termo aprovado encontrado para esta categoria.</p>';
                     termCountText.innerText = `0 termos disponíveis`;
                 }
             })
@@ -84,36 +85,34 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    function renderizarLista(termos) {
-        listContainer.innerHTML = ''; 
+   function renderizarLista(termos) {
+    listContainer.innerHTML = ''; 
 
-        termos.forEach(termo => {
-            // Define o caminho da imagem: se existir no banco usa uploads, senão usa padrão
-            const imagem = termo.foto_termo 
-                ? `assets/uploads/${termo.foto_termo}` 
-                : 'assets/images/port.png';
+    termos.forEach(termo => {
+        const imagem = termo.foto_termo ? termo.foto_termo : 'assets/images/mat.png';
 
-            const cardHTML = `
-                <div class="term_card" 
-                     data-nome="${termo.nome_termo.toLowerCase()}" 
-                     onclick="window.location.href='termos.php?id=${termo.id_termo}'" 
-                     style="cursor: pointer;">
-                    
-                    <img src="${imagem}" alt="${termo.nome_termo}" class="term_image">
-                    
-                    <div class="term_info">
-                        <h3>${termo.nome_termo}</h3>
-                        <p>${termo.descricao_termo}</p>
-                    </div>
-                    
-                    <i class="fa-solid fa-arrow-right arrow_icon"></i>
+        // Criamos o HTML do card
+        const cardHTML = `
+            <div class="term_card" 
+                 data-nome="${termo.nome_termo.toLowerCase()}" 
+                 onclick="window.location.href='termos.php?id=${termo.id_termo}'" 
+                 style="cursor: pointer;">
+                
+                <img src="${imagem}" alt="${termo.nome_termo}" class="term_image">
+                
+                <div class="term_info">
+                    <h3>${termo.nome_termo}</h3>
+                    <p>${termo.descricao_termo}</p>
                 </div>
-            `;
-            listContainer.insertAdjacentHTML('beforeend', cardHTML);
-        });
-    }
+                
+                <i class="fa-solid fa-arrow-right arrow_icon"></i>
+            </div>
+        `;
+        listContainer.insertAdjacentHTML('beforeend', cardHTML);
+    });
+}
 
-    // Filtro de busca em tempo real
+    // Filtro de busca em tempo real no front-end
     searchInput.addEventListener('input', function() {
         const busca = this.value.toLowerCase();
         const cards = document.querySelectorAll('.term_card');
@@ -126,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     carregarTermos();
 });
+
 </script>
 </body>
 </html>

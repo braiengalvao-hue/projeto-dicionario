@@ -54,7 +54,7 @@
         });
 
         mat.addEventListener('click', function(){
-            // window.location.href = 'matematica.php'; // Exemplo para o futuro
+            window.location.href = 'matematica.php'; // Exemplo para o futuro
         });
 </script>
 </body>

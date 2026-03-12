@@ -82,30 +82,44 @@ switch ($method) {
         
 
         case "POST":
-                $data = json_decode(file_get_contents("php://input"));
+        // Como enviamos FormData pelo JS, usamos $_POST e não json_decode
+        if (!isset($_POST['nome_termo']) || !isset($_POST['descricao_termo']) || !isset($_POST['turmas_id_turma'])) {
+            echo json_encode(["success" => false, "message" => "Dados incompletos no servidor."]);
+            exit;
+        }
 
-                if (!isset($data->nome_termo) || !isset($data->descricao_termo) || !isset($data->turmas_id_turma)) {
-                    echo json_encode(["success" => false, "message" => "Dados incompletos."]);
-                    exit;
-                }
+        $nome_termo = $conn->real_escape_string($_POST['nome_termo']);
+        $descricao = $conn->real_escape_string($_POST['descricao_termo']);
+        $exemplo = isset($_POST['exemplo_termo']) ? $conn->real_escape_string($_POST['exemplo_termo']) : '';
+        $categoria_post = $conn->real_escape_string($_POST['cat_termo']); 
+        $nome_aluno = $conn->real_escape_string($_POST['nome_aluno']);
+        $id_turma = (int) $_POST['turmas_id_turma'];
 
-                $nome_termo = $conn->real_escape_string($data->nome_termo);
-                $descricao = $conn->real_escape_string($data->descricao_termo);
-                $exemplo = isset($data->exemplo_termo) ? $conn->real_escape_string($data->exemplo_termo) : ''; // NOVO
-                $categoria_post = $conn->real_escape_string($data->cat_termo); 
-                $nome_aluno = $conn->real_escape_string($data->nome_aluno);
-                $id_turma = (int) $data->turmas_id_turma;
+        // Lógica da Foto
+        $foto_nome = null;
+        if (isset($_FILES['foto_termo']) && $_FILES['foto_termo']['error'] === 0) {
+            $diretorio = "../assets/uploads/";
+            
+            // Cria a pasta se não existir
+            if (!file_exists($diretorio)) {
+                mkdir($diretorio, 0777, true);
+            }
 
-                // Inserção incluindo o campo exemplo_termo
-                $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo) 
-                        VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_aluno', $id_turma, 'pendente')";
+            $extensao = pathinfo($_FILES['foto_termo']['name'], PATHINFO_EXTENSION);
+            $foto_nome = uniqid() . "." . $extensao; // Nome único
+            
+            move_uploaded_file($_FILES['foto_termo']['tmp_name'], $diretorio . $foto_nome);
+        }
 
-                if ($conn->query($sql) === TRUE) {
-                    echo json_encode(["success" => true, "id_termo" => $conn->insert_id]);
-                } else {
-                    echo json_encode(["success" => false, "message" => $conn->error]);
-                }
-                break;
+        $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, foto_termo, status_termo) 
+                VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_aluno', $id_turma, " . ($foto_nome ? "'$foto_nome'" : "NULL") . ", 'pendente')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo json_encode(["success" => true, "id_termo" => $conn->insert_id]);
+        } else {
+            echo json_encode(["success" => false, "message" => $conn->error]);
+        }
+        break;
 
     case "PUT":
         if (!isset($_SESSION['id_usuario'])) {

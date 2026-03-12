@@ -1,0 +1,9 @@
+INSERT INTO `turmas` (`nome_turma`) VALUES 
+('6º Ano A - EF'),
+('6º Ano B - EF'),
+('7º Ano A - EF'),
+('8º Ano A - EF'),
+('9º Ano A - EF'),
+('1º Ano A - EM'),
+('2º Ano A - EM'),
+('3º Ano A - EM');

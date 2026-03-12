@@ -57,6 +57,12 @@
         </footer>
     </main>
 
+<div id="imageModal" class="modal">
+    <span class="close_modal">&times;</span>
+    <img class="modal_content" id="img01">
+    <div id="caption"></div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const params = new URLSearchParams(window.location.search);
@@ -67,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // --- BUSCA DOS DADOS DO TERMO ---
     fetch(`api/termos.php?id=${termoId}`)
         .then(response => response.json())
         .then(res => {
@@ -83,15 +90,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (termo.cat_termo === 'port') {
                     badge.innerText = 'Português';
-                    btnVoltar.href = 'portugues.php'; // Se for português, volta para lista de português
+                    btnVoltar.href = 'portugues.php';
                 } else {
                     badge.innerText = 'Matemática';
-                    btnVoltar.href = 'matematica.php'; // Se for matemática, volta para lista de matemática
+                    btnVoltar.href = 'matematica.php';
                 }
                 
-                // 3. Imagem
+                // 3. Imagem (AJUSTADO COM O CAMINHO DA PASTA)
                 const imgElement = document.querySelector('.featured_image');
-                imgElement.src = termo.foto_termo ? termo.foto_termo : 'assets/images/icon_not_faund.svg';
+                
+                if (termo.foto_termo) {
+                    // Se houver foto no banco, concatena com a pasta de uploads
+                    imgElement.src = `assets/uploads/${termo.foto_termo}`;
+                } else {
+                    // Se não houver, usa a imagem padrão da categoria
+                    imgElement.src = termo.cat_termo === 'port' ? 'assets/images/port.png' : 'assets/images/mat.png';
+                }
                 imgElement.alt = termo.nome_termo;
 
                 // 4. Conteúdo (Descrição e Exemplo)
@@ -112,6 +126,29 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Erro:', error);
             alert('Erro ao conectar com o servidor.');
         });
+
+    // --- LÓGICA DO MODAL (DENTRO DO MESMO DOMContentLoaded) ---
+    const modal = document.getElementById("imageModal");
+    const img = document.querySelector(".featured_image");
+    const modalImg = document.getElementById("img01");
+    const captionText = document.getElementById("caption");
+    const span = document.querySelector(".close_modal");
+
+    img.onclick = function() {
+        modal.style.display = "block";
+        modalImg.src = this.src;
+        captionText.innerHTML = this.alt;
+    }
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 });
 </script>
 </body>
