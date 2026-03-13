@@ -71,7 +71,7 @@
                 </button>
             </div>
         </form>
-    </main>
+    </main> 
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
