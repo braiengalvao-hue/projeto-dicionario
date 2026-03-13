@@ -151,21 +151,32 @@ case "POST":
         }
         break;
 
-    case "DELETE": // Adicionado para suportar a função excluirTermo do seu JS
+        case 'PATCH':
+        // 1. Verifica se o usuário está logado (apenas moderadores podem excluir/reprovar)
         if (!isset($_SESSION['id_usuario'])) {
             echo json_encode(["success" => false, "message" => "Acesso negado."]);
             exit;
         }
+
+        // 2. Captura o corpo da requisição JSON
         $data = json_decode(file_get_contents("php://input"));
-        $id_termo = (int) $data->id_termo;
-        $sql = "DELETE FROM termos WHERE id_termo = $id_termo";
-        if ($conn->query($sql)) {
-            echo json_encode(["success" => true]);
+
+        // 3. Valida se o ID do termo foi enviado
+        if (isset($data->id_termo)) {
+            $id_termo = (int) $data->id_termo;
+            
+            // 4. Executa a exclusão lógica mudando o status
+            $sql = "UPDATE termos SET status_termo = 'reprovado' WHERE id_termo = $id_termo";
+    
+            if ($conn->query($sql)) {
+                echo json_encode(["success" => true, "message" => "Termo reprovado com sucesso."]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Erro ao atualizar: " . $conn->error]);
+            }
         } else {
-            echo json_encode(["success" => false, "message" => $conn->error]);
+            echo json_encode(["success" => false, "message" => "ID do termo não fornecido."]);
         }
         break;
-
     default:
         http_response_code(405);
         echo json_encode(["success" => false, "message" => "Método não suportado."]);
