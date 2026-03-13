@@ -58,11 +58,13 @@
 
                 <div class="input_group">
                     <label>Adicionar Foto (opcional)</label>
-                    <div class="upload_area_desktop" onclick="document.getElementById('file_upload').click()">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <p id="file_name_display">Clique para escolher uma imagem ou arraste aqui</p>
-                        <span>PNG, JPG até 5MB</span>
-                        <input type="file" name="foto_termo" id="file_upload" hidden accept="image/*">
+                    <div class="upload_container">
+                        <input type="file" id="foto_termo" name="foto_termo" accept="image/*" hidden>
+                        <label for="foto_termo" class="upload_label">
+                            <i class="fa-solid fa-upload"></i>
+                            <span>Clique para escolher uma imagem</span>
+                            <small>PNG, JPG até 5MB</small>
+                        </label>
                     </div>
                 </div>
             </section>

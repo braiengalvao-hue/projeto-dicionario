@@ -64,7 +64,7 @@ if (!isset($_SESSION['id_usuario'])) {
     </main>
 
     <div class="fab_container">
-        <a class="fab_button" href="adicionar_termos_admin.php" title="Novo Termo"><i class="material-icons">add    </i></a>
+        <a class="fab_button" href="adicionar_termos_admin.php" title="Novo Termo"><i class="material-icons">add</i></a>
         <a class="fab_button fab_user_outline" href="cadastrar_usuarios.php" title="Novo Usuário"><i class="material-icons">person_add</i></a>
     </div>
 
@@ -98,21 +98,19 @@ if (!isset($_SESSION['id_usuario'])) {
     </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     const listContainer = document.querySelector('.list_container');
     const tabs = document.querySelectorAll('.tab_btn');
     const modal = document.getElementById('editModal');
     const editForm = document.getElementById('editForm');
     let statusAtual = 'pendente'; 
 
-    // 1. ATUALIZAR CONTADORES (AJUSTADO PARA REPROVADO)
     function atualizarResumoPainel() {
         fetch('api/termos.php?contar_status=true')
             .then(res => res.json())
             .then(res => {
                 if (res.success) {
                     const d = res.data;
-                    // Agora usamos d.reprovado que vem do PHP ajustado
                     const totalReprovados = d.reprovado || 0;
 
                     document.querySelector('.summary_card.pending .count').innerText = d.pendente;
@@ -126,7 +124,6 @@ if (!isset($_SESSION['id_usuario'])) {
             });
     }
 
-    // 2. CARREGAR LISTA
     function carregarTermosAdmin(status = 'pendente') {
         statusAtual = status;
         listContainer.innerHTML = '<p style="text-align:center; padding:20px;">Buscando dados...</p>';
@@ -141,11 +138,10 @@ if (!isset($_SESSION['id_usuario'])) {
             });
     }
 
-    // 3. RENDERIZAR CARDS (BOTÕES AJUSTADOS PARA 'REPROVADO')
     function renderizarSugestoes(termos) {
         listContainer.innerHTML = '';
         if (!termos || termos.length === 0) {
-            listContainer.innerHTML = `<p style="padding:40px; text-align:center; color: #666;">Nenhuma sugestão encontrada.</p>`;
+            listContainer.innerHTML = `<p style="padding:40px; text-align:center; color: #666;">Nenhuma sugestão encontrada em ${statusAtual}.</p>`;
             return;
         }
 
@@ -154,6 +150,37 @@ if (!isset($_SESSION['id_usuario'])) {
             const catClass = termo.cat_termo === 'mat' ? 'math' : 'port';
             const catIcon = termo.cat_termo === 'mat' ? 'calculate' : 'menu_book';
             const catLabel = termo.cat_termo === 'mat' ? 'Matemática' : 'Português';
+
+            // Lógica de botões condicionais para evitar botões repetidos no status atual
+            let botoesHTML = '';
+
+            // Se NÃO estiver em aprovados, mostra o botão Aprovar
+            if (statusAtual !== 'aprovado') {
+                botoesHTML += `
+                    <button class="btn_approve" onclick="alterarStatus(${termo.id_termo}, 'aprovado')">
+                        <i class="material-icons">check_circle</i> Aprovar
+                    </button>`;
+            }
+
+            // O botão Editar sempre aparece
+            botoesHTML += `
+                <button class="btn_edit_outline" onclick='abrirEdicao(${JSON.stringify(termo)})'>
+                    <i class="material-icons">edit</i> Editar
+                </button>`;
+
+            // Se NÃO estiver em rejeitados, mostra o botão Rejeitar
+            if (statusAtual !== 'reprovado') {
+                botoesHTML += `
+                    <button class="btn_reject_outline" onclick="alterarStatus(${termo.id_termo}, 'reprovado')">
+                        <i class="material-icons">cancel</i> Rejeitar
+                    </button>`;
+            } else {
+                // Se já estiver em rejeitados, você pode mostrar um botão de Excluir Permanente se quiser
+                botoesHTML += `
+                    <button class="btn_reject_outline" style="border-color: #ff4d4d; color: #ff4d4d;" onclick="excluirDefinitivo(${termo.id_termo})">
+                        <i class="material-icons">delete_forever</i> Excluir
+                    </button>`;
+            }
 
             const card = `
                 <div class="suggestion_card">
@@ -178,26 +205,13 @@ if (!isset($_SESSION['id_usuario'])) {
                         </div>
                     </div>
                     <div class="suggestion_actions">
-                        ${statusAtual !== 'aprovado' ? `
-                            <button class="btn_approve" onclick="alterarStatus(${termo.id_termo}, 'aprovado')">
-                                <i class="material-icons">check_circle</i> Aprovar
-                            </button>` : ''}
-                        
-                        <button class="btn_edit_outline" onclick='abrirEdicao(${JSON.stringify(termo)})'>
-                            <i class="material-icons">edit</i> Editar
-                        </button>
-
-                        ${statusAtual !== 'reprovado' ? `
-                            <button class="btn_reject_outline" onclick="alterarStatus(${termo.id_termo}, 'reprovado')">
-                                <i class="material-icons">cancel</i> Rejeitar
-                            </button>` : ''}
+                        ${botoesHTML}
                     </div>
                 </div>`;
             listContainer.insertAdjacentHTML('beforeend', card);
         });
     }
 
-    // 4. APROVAR / REPROVAR
     window.alterarStatus = function(id, novoStatus) {
         const msg = novoStatus === 'aprovado' ? 'aprovar' : 'rejeitar';
         if(!confirm(`Deseja realmente ${msg} este termo?`)) return;
@@ -216,7 +230,6 @@ if (!isset($_SESSION['id_usuario'])) {
         });
     };
 
-    // 5. MODAL DE EDIÇÃO
     window.abrirEdicao = function(termo) {
         document.getElementById('edit_title').value = termo.nome_termo;
         document.getElementById('edit_description').value = termo.descricao_termo;
@@ -255,7 +268,6 @@ if (!isset($_SESSION['id_usuario'])) {
         });
     });
 
-    // 6. ABAS (PADRONIZADO COM O BANCO)
     tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
@@ -267,9 +279,8 @@ if (!isset($_SESSION['id_usuario'])) {
 
     window.onclick = function(e) { if (e.target == modal) closeEditModal(); }
 
-    // Início
-atualizarResumoPainel();
-carregarTermosAdmin('pendente');
+    atualizarResumoPainel();
+    carregarTermosAdmin('pendente');
 });
 </script>
 </body>
