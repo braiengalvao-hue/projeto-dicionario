@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once '../config/db.php'; 
+
+error_reporting(0); 
+ini_set('display_errors', 0);
 header('Content-Type: application/json');
 
 $method = $_SERVER["REQUEST_METHOD"];
