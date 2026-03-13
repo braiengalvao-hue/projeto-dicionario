@@ -172,15 +172,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 3. REJEITAR apenas se não estiver na aba Rejeitadas
             // Se estiver na aba Rejeitadas, mostramos o botão de EXCLUIR
-            if (statusAtual !== 'reprovado') {
+            if (statusAtual != 'reprovado') {
                 botoesHTML += `
                     <button class="btn_reject_outline" onclick="alterarStatus(${termo.id_termo}, 'reprovado')">
                         <i class="material-icons">cancel</i> Rejeitar
-                    </button>`;
-            } else {
-                botoesHTML += `
-                    <button class="btn_reject_outline" style="border-color: #d32f2f; color: #d32f2f;" onclick="excluirTermo(${termo.id_termo})">
-                        <i class="material-icons">delete_forever</i> Excluir
                     </button>`;
             }
 
