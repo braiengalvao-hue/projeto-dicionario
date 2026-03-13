@@ -122,7 +122,7 @@
             .then(data => {
                 if (data.success) {
                     alert("Cadastro realizado com sucesso! Agora você pode fazer login.");
-                    window.location.href = 'login.html';
+                    window.location.href = 'login.php';
                 } else {
                     alert("Erro: " + data.message);
                     btn.innerText = "Criar Conta";

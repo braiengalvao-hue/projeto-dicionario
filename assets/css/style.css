@@ -21,12 +21,16 @@ body {
 }
 
 .navbar_container {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px 60px;
     border-bottom: 1px solid var(--border_gray); 
+    background-color: var(--white);
 }
 
 .logo_title {
@@ -158,8 +162,6 @@ body {
     padding: 20px 10%;
     border-bottom: 1px solid var(--border);
     box-shadow: 0 4px 12px rgba(16, 24, 40, 0.06); 
-    
-    /* Opcional: manter uma borda bem clarinha junto com a sombra */
     border-bottom: 1px solid rgba(229, 231, 235, 0.5);
 }
 
@@ -168,7 +170,6 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-
 }
 
 .header_left {
@@ -182,7 +183,6 @@ body {
     font-size: 20px;
     border: none;
     background-color: var(--white);
-
 }
 
 .icon_circle_small {
@@ -206,7 +206,6 @@ body {
     color: var(--text_muted);
 }
 
-/* Barra de Busca */
 .search_box {
     display: flex;
     align-items: center;
@@ -229,7 +228,6 @@ body {
     color: var(--text_dark);
 }
 
-/* Lista de Termos */
 .scroll_content {
     padding: 40px 10%;
     background-color: #fcfcfc;
@@ -240,23 +238,22 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-width: 1000px;
+    width: 100%;
     margin: 0 auto;
 }
 
-/* 1. O CARD (O retângulo branco que envolve tudo) */
 .term_card {
     background: var(--white);
     border: 1px solid var(--border_gray);
     border-radius: 12px;
-    padding: 16px;          /* Espaçamento interno padronizado */
-    display: flex;          /* Alinha imagem e texto lado a lado */
-    align-items: center;    /* Centraliza verticalmente a imagem e o texto */
-    gap: 16px;              /* Espaço fixo entre imagem, texto e ícone */
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
     transition: all 0.2s ease;
     cursor: pointer;
-    width: 100%;            /* Ocupa a largura total do container da lista */
-    margin-bottom: 8px;     /* Espaço entre um card e outro */
+    width: 100%;
+    margin-bottom: 8px;
 }
 
 .term_card:hover {
@@ -265,20 +262,18 @@ body {
     transform: translateY(-2px);
 }
 
-/* 2. A IMAGEM (A foto dentro do card) */
 .term_image {
-    width: 80px;            /* Tamanho fixo para não variar entre termos */
-    height: 80px;           /* Altura igual à largura para ser quadrada */
-    object-fit: cover;      /* CORTA a imagem para preencher o quadrado sem esticar */
-    object-position: center;/* Mantém o foco no meio da imagem ao cortar */
-    border-radius: 8px;     /* Bordas levemente arredondadas */
-    flex-shrink: 0;         /* Impede que a imagem seja "esmagada" pelo texto */
-    background-color: var(--bg_light); /* Cor de fundo caso a imagem falhe */
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background-color: var(--bg_light);
 }
 
-/* 3. O TEXTO (Container das informações) */
 .term_info {
-    flex: 1;                /* Faz o texto ocupar todo o espaço restante */
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -295,21 +290,18 @@ body {
     color: var(--text_muted);
     line-height: 1.4;
     margin: 0;
-    /* Opcional: limita a descrição a 2 linhas para manter o padrão visual */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* 4. O ÍCONE DE SETA */
 .arrow_icon {
     color: var(--border_gray);
     font-size: 14px;
-    margin-left: auto;      /* Empurra a seta para o final do card */
+    margin-left: auto;
 }
 
-/* Botão Flutuante (FAB) */
 .fab_button {
     position: fixed;
     bottom: 30px;
@@ -329,8 +321,7 @@ body {
     text-decoration: none;
 }
 
-/* --- ESTILOS DA PÁGINA DE DETALHES --- */
-
+/* --- DETALHES --- */
 .header_left_details {
     width: 100%;
     display: flex;
@@ -367,7 +358,6 @@ body {
     padding: 40px 20px;
 }
 
-/* Imagem Arredondada */
 .featured_image_container {
     width: 100%;
     margin-bottom: 30px;
@@ -377,11 +367,10 @@ body {
     width: 100%;
     height: 400px;
     object-fit: cover;
-    border-radius: 24px; /* Bem arredondada como na foto */
+    border-radius: 24px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
 
-/* Seções de Texto */
 .info_section {
     margin-bottom: 25px;
     border: 1px solid var(--border_gray);
@@ -422,7 +411,6 @@ body {
     font-style: italic;
 }
 
-/* Colaborador */
 .collab_footer {
     display: flex;
     align-items: center;
@@ -455,23 +443,18 @@ body {
     color: var(--text_muted);
 }
 
-/* --- ESTILOS DA PÁGINA DE LOGIN --- */
-
-/* Fundo azul e reset para ocupar a tela toda */
+/* --- LOGIN --- */
 .bg_admin {
     background-color: var(--primary_blue);
-    margin: 0;
-    padding: 0;
     min-height: 100vh;
     display: flex;
-    flex-direction: column; /* Organiza header em cima e container no resto */
+    flex-direction: column;
     position: relative;
 }
 
-/* Header: Alinhado à esquerda conforme solicitado */
 .header_login {
     width: 100%;
-    padding: 30px 60px; /* Mesma margem da navbar inicial */
+    padding: 30px 60px;
     box-sizing: border-box;
 }
 
@@ -486,25 +469,19 @@ body {
     transition: opacity 0.2s;
 }
 
-.btn_back_login:hover {
-    opacity: 0.8;
-}
-
-/* Container Flex para centralizar o Card no meio exato da tela */
 .login_container_flex {
-    flex: 1; /* Ocupa todo o espaço restante abaixo do header */
+    flex: 1;
     display: flex;
-    align-items: center; /* Centraliza verticalmente */
-    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center;
+    justify-content: center;
     padding: 20px;
 }
 
-/* O Card Branco */
 .login_card {
     background-color: var(--white);
     width: 40%;
     padding: 40px;
-    border-radius: 24px; /* Bordas arredondadas conforme os outros cards */
+    border-radius: 24px;
     text-align: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
@@ -522,7 +499,6 @@ body {
     font-size: 22px;
 }
 
-/* Inputs e Formulário */
 .login_form {
     text-align: left;
     margin-top: 5%;
@@ -563,9 +539,8 @@ body {
 }
 
 .input_wrapper input:focus {
-    border-color: var(--primary_blue); /* Remova o '1px solid' daqui */
+    border-color: var(--primary_blue);
     background-color: var(--white);
-    outline: none; /* Isso remove aquela borda preta padrão do navegador */
 }
 
 .eye_icon {
@@ -575,7 +550,6 @@ body {
     cursor: pointer;
 }
 
-/* Botão de Ação */
 .btn_login {
     width: 100%;
     padding: 14px;
@@ -590,33 +564,11 @@ body {
     transition: transform 0.1s;
 }
 
-.btn_login:active {
-    transform: scale(0.98);
-}
-
-.forgot_password {
-    display: block;
-    text-align: center;
-    margin-top: 24px;
-    color: var(--primary_blue);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-/* --- ESTILOS DA PÁGINA DE FORMULÁRIO --- */
-
-.bg_light_page {
-    background-color: #F9FAFB;
-}
-
-.subtitle_header {
-    font-size: 14px;
-    color: var(--text_muted);
-}
+/* --- FORMULÁRIO --- */
+.bg_light_page { background-color: #F9FAFB; }
 
 .form_container_desktop {
-    max-width: 90%; /* Limita a largura para leitura confortável no Desktop */
+    max-width: 90%;
     margin: 40px auto;
     padding: 0 20px 80px;
 }
@@ -627,7 +579,6 @@ body {
     border-radius: 16px;
     padding: 32px;
     margin-bottom: 24px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .section_title_form {
@@ -637,76 +588,259 @@ body {
     font-weight: 700;
 }
 
-/* Grid de 2 colunas para Nome e Turma no Desktop */
 .form_grid_2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
 }
 
+.input_group input[type="text"],
+.input_group input[type="email"],
 .input_group textarea {
     width: 100%;
     padding: 12px 16px;
     border: 1px solid var(--border_gray);
     border-radius: 10px;
+    background-color: #F9FAFB;
     font-size: 14px;
-    font-family: inherit;
-    resize: vertical;
+    outline: none;
 }
 
-/* Estilo do Radio Button */
-.radio_group_horizontal {
-    display: flex;
-    gap: 20px;
-    margin-top: 5px;
+/* --- ADMIN --- */
+.admin_summary_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    max-width: 100%;
+    margin: 0 auto 32px;
 }
 
-.radio_item {
+.summary_card {
+    background: var(--white);
+    padding: 35px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 14px;
+    gap: 16px;
+    border: 1px solid var(--border_gray);
 }
 
-/* Área de Upload */
-.upload_area_desktop {
-    border: 2px dashed var(--border_gray);
+.summary_card.pending { background-color: #FFFBEB; border-color: #FEF3C7; }
+.summary_card.approved { background-color: #F0FDF4; border-color: #a8d5b8; }
+.summary_card.rejected { background-color: #FEF2F2; border-color: #e6c1c1; }
+
+.summary_icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+}
+
+.pending .summary_icon { background-color: #F59E0B; }
+.approved .summary_icon { background-color: #22C55E; }
+.rejected .summary_icon { background-color: #EF4444; }
+
+.summary_info .count {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text_dark);
+}
+
+.tabs_container {
+    max-width: 1000px;
+    margin: 2% 0px;
+    display: flex;
+    gap: 8px;
+    background: #F2F4F7;
+    padding: 6px;
     border-radius: 12px;
-    padding: 40px;
-    text-align: center;
+    width: fit-content;
+}
+
+.tab_btn {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--text_muted);
     cursor: pointer;
+}
+
+.tab_btn.active {
+    background: var(--white);
+    color: var(--text_dark);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.suggestion_card {
+    background: var(--white);
+    border: 1px solid var(--border_gray);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+}
+
+.term_title_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.badge_category_alt {
+    background-color: #E0E7FF;
+    color: #4338CA;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge_category_alt.math { background-color: #F5F3FF; color: #6D28D9; }
+
+.suggestion_body {
+    border-top: 1px solid #F2F4F7;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* --- ESTILIZAÇÃO DOS BOTÕES ATUALIZADA --- */
+.suggestion_actions {
+    border-top: 1px solid #F2F4F7;
+    padding-top: 20px;
+    display: flex;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.btn_approve {
+    flex: 1;
+    background-color: #16A34A;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.btn_approve:hover { background-color: #15803D; }
+
+.btn_edit_outline {
+    flex: 1;
+    background-color: var(--white);
+    border: 1px solid var(--border_gray);
+    color: var(--text_muted);
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn_edit_outline:hover {
+    background-color: var(--bg_light);
+    color: var(--primary_blue);
+    border-color: var(--primary_blue);
+}
+
+.btn_reject_outline {
+    flex: 1;
+    background-color: transparent;
+    border: 1px solid #D1D5DB;
+    color: #EF4444;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     transition: all 0.2s;
 }
 
-.upload_area_desktop:hover {
-    border-color: var(--primary_blue);
-    background-color: rgba(30, 58, 138, 0.02);
+.btn_reject_outline:hover { 
+    background-color: #FEF2F2; 
+    border-color: #EF4444; 
 }
 
-.upload_area_desktop i {
-    font-size: 32px;
-    color: var(--primary_blue);
-    margin-bottom: 12px;
+/* Estrutura do Modal */
+.modal_overlay {
+    display: none; /* Escondido por padrão */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(16, 24, 40, 0.6); /* Fundo escuro suave */
+    backdrop-filter: blur(4px); /* Efeito de desfoque ao fundo */
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
 }
 
-.upload_area_desktop p {
-    font-weight: 500;
-    color: var(--text_dark);
-    margin-bottom: 4px;
+.modal_card {
+    background: var(--white);
+    width: 90%;
+    max-width: 600px;
+    border-radius: 16px;
+    box-shadow: 0 20px 24px -4px rgba(16, 24, 40, 0.1);
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out;
 }
 
-.upload_area_desktop span {
-    font-size: 12px;
-    color: var(--text_muted);
-}
-
-/* Botões Inferiores */
-.form_actions_footer {
+.modal_header {
+    padding: 24px;
+    border-bottom: 1px solid var(--border_gray);
     display: flex;
-    justify-content: flex-end;
-    gap: 16px;
-    margin-top: 32px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal_header h2 { font-size: 20px; color: var(--text_dark); }
+
+.close_btn {
+    background: none;
+    border: none;
+    color: var(--text_muted);
+    cursor: pointer;
+}
+
+.modal_body {
+    padding: 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* --- ESTILIZAÇÃO DOS BOTÕES DO MODAL --- */
+
+.modal_footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border_gray);
+    display: flex;
+    justify-content: flex-end; /* Alinha os botões à direita */
+    gap: 12px;
+    background: #F9FAFB; /* Fundo levemente cinza para destacar a área de ação */
 }
 
 .btn_cancel {
@@ -717,6 +851,12 @@ body {
     color: var(--text_dark);
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn_cancel:hover {
+    background-color: #F2F4F7;
+    border-color: #98A2B3;
 }
 
 .btn_submit_form {
@@ -735,107 +875,47 @@ body {
 
 .btn_submit_form:hover {
     filter: brightness(1.2);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
 }
 
-.input_group input[type="text"],
-.input_group input[type="email"],
-.input_group textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--border_gray);
-    border-radius: 10px;
-    background-color: #F9FAFB; /* Cor de fundo clarinha do design */
-    font-size: 14px;
-    font-family: inherit;
+/* 1. O PAI manda na posição da tela */
+.fab_container {
+    position: fixed;
+    bottom: 0px;
+    right: 10px;
+    display: flex !important; /* Força o flexbox */
+    flex-direction: row;      /* Garante que fiquem lado a lado */
+    gap: 16px; 
+    z-index: 9999;
+}
+
+/* 2. O BOTÃO agora é apenas um círculo (sem posição fixa própria) */
+.fab_button {
+    /* REMOVEMOS o position: fixed, bottom e right daqui! */
+    position: relative; 
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--primary_blue);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 24px;
+    box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
     transition: all 0.2s ease;
-    outline: none;
-    box-sizing: border-box; /* Garante que o padding não aumente o tamanho final */
+    border: none;
 }
 
-/* Efeito de Foco Corrigido (sem o '1px solid' que causava erro) */
-.input_group input:focus,
-.input_group textarea:focus {
-    border-color: var(--primary_blue);
-    background-color: var(--white);
-    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1); /* Efeito de brilho azul */
+/* 3. Estilo específico para o de Usuário (Borda) */
+.fab_user_outline {
+    background-color: var(--white) !important;
+    color: var(--primary_blue) !important;
+    border: 2px solid var(--primary_blue) !important;
 }
 
-.featured_image_container {
-    width: 100%;
-    max-width: 1000px; /* Ou o tamanho máximo que você desejar para a tela */
-    margin: 0 auto 20px auto;
-    height: 350px; /* Define uma altura fixa para manter o padrão do dicionário */
-    overflow: hidden;
-    border-radius: 12px;
-    background-color: #f0f0f0; /* Fundo cinza caso a imagem demore a carregar */
+.fab_button:hover {
+    transform: translateY(-4px);
 }
 
-/* A Imagem em si */
-.featured_image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Faz a imagem cobrir todo o container sem distorcer */
-    object-position: center; /* Mantém o foco no centro da imagem */
-    display: block;
-}
-/* Estilo do Modal (Fundo) */
-.modal {
-    display: none; 
-    position: fixed; 
-    z-index: 1000; 
-    padding-top: 50px; 
-    left: 0;
-    top: 0;
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.9); 
-    overflow: auto;
-}
-
-/* Imagem dentro do Modal */
-.modal_content {
-    margin: auto;
-    display: block;
-    width: 80%;
-    max-width: 900px;
-    border-radius: 10px;
-    animation: zoom 0.3s;
-}
-
-/* Legenda */
-#caption {
-    margin: auto;
-    display: block;
-    width: 80%;
-    max-width: 700px;
-    text-align: center;
-    color: #ccc;
-    padding: 10px 0;
-    font-size: 1.2rem;
-}
-
-/* Botão Fechar */
-.close_modal {
-    position: absolute;
-    top: 20px;
-    right: 35px;
-    color: #f1f1f1;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-@keyframes zoom {
-    from {transform:scale(0)} 
-    to {transform:scale(1)}
-}
-
-/* Cursor de lupa na imagem principal para indicar que é clicável */
-.featured_image {
-    cursor: zoom-in;
-    transition: 0.3s;
-}
-
-.featured_image:hover {
-    opacity: 0.8;
-}
