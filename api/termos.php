@@ -75,29 +75,52 @@ switch ($method) {
         echo json_encode(["success" => true, "data" => $termos]);
         break;
 
-    case "POST":
-        // CRIAÇÃO DE TERMO
+case "POST":
+        // 1. Captura de dados de texto
         $nome_termo = $conn->real_escape_string($_POST['nome_termo'] ?? '');
         $descricao = $conn->real_escape_string($_POST['descricao_termo'] ?? '');
         $exemplo = $conn->real_escape_string($_POST['exemplo_termo'] ?? '');
         $categoria_post = $conn->real_escape_string($_POST['cat_termo'] ?? 'port'); 
         
-        // Lógica para Professor vs Aluno
+        // Lógica para Autor e Turma
         if(isset($_SESSION['id_usuario'])) {
             $nome_autor = $_POST['nome_professor'] ?? 'Professor'; 
-            $id_turma = 11; // ID padrão para termos de professores
+            $id_turma = 11; 
         } else {
             $nome_autor = $conn->real_escape_string($_POST['nome_aluno'] ?? 'Anônimo');
             $id_turma = (int)($_POST['turmas_id_turma'] ?? 0);
         }
 
-        $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo) 
-                VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_autor', $id_turma, 'pendente')";
+        // 2. LÓGICA DE UPLOAD DE IMAGEM
+        $nome_imagem_final = null; // Valor padrão se não houver imagem
+
+        if (isset($_FILES['foto_termo']) && $_FILES['foto_termo']['error'] === UPLOAD_ERR_OK) {
+            $file = $_FILES['foto_termo'];
+            $extensao = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $extensoes_permitidas = ['jpg', 'jpeg', 'png', 'webp'];
+
+            // Valida extensão
+            if (in_array($extensao, $extensoes_permitidas)) {
+                // Gera um nome único: ex: 65f2a1b3c4d5e.png
+                $novo_nome = uniqid() . "." . $extensao;
+                $destino = "../assets/uploads/" . $novo_nome;
+
+                // Move o arquivo da pasta temporária para o destino final
+                if (move_uploaded_file($file['tmp_name'], $destino)) {
+                    $nome_imagem_final = $novo_nome;
+                }
+            }
+        }
+
+        // 3. SQL atualizado com a coluna foto_termo
+        $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo, foto_termo) 
+                VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_autor', $id_turma, 'pendente', " . 
+                ($nome_imagem_final ? "'$nome_imagem_final'" : "NULL") . ")";
 
         if ($conn->query($sql)) {
             echo json_encode(["success" => true, "id_termo" => $conn->insert_id]);
         } else {
-            echo json_encode(["success" => false, "message" => $conn->error]);
+            echo json_encode(["success" => false, "message" => "Erro no banco: " . $conn->error]);
         }
         break;
 

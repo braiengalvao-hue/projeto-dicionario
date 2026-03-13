@@ -70,7 +70,9 @@ document.addEventListener('DOMContentLoaded', function() {
     listContainer.innerHTML = ''; 
 
     termos.forEach(termo => {
-        const imagem = termo.foto_termo ? termo.foto_termo : 'assets/images/mat.png';
+       const imagem = termo.foto_termo 
+            ? `assets/uploads/${termo.foto_termo}` 
+            : 'assets/images/mat.png';
 
         // Criamos o HTML do card
         const cardHTML = `
