@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dicionário de Português - SENAI</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 
@@ -56,9 +56,11 @@
             </div>
     </main>
 
-    <a class="fab_button" href="adicionar_termo.php">
-        <i class="fa-solid fa-plus"></i>
-    </a>
+    <div class="fab_container">
+        <a class="fab_button" href="adicionar_termo.php">
+            <i class="material-icons"></i>
+        </a>
+    </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const listContainer = document.querySelector('.list_container');
