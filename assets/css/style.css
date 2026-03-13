@@ -696,8 +696,10 @@ body {
 
 .tab_btn.active {
     background: var(--white);
-    color: var(--text_dark);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    color: var(--primary_blue);
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
 }
 
 .suggestion_card {
@@ -996,3 +998,4 @@ body {
     font-weight: 500;
     text-align: center;
 }
+
