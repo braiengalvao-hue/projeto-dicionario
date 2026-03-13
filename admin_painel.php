@@ -231,7 +231,7 @@ if (!isset($_SESSION['id_usuario'])) {
         if(!confirm("Tem certeza que deseja EXCLUIR permanentemente este termo?")) return;
         
         fetch('api/termos.php', {
-            method: 'DELETE',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_termo: id })
         })
