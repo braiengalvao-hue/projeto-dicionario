@@ -5,19 +5,18 @@ header('Content-Type: application/json');
 
 $method = $_SERVER["REQUEST_METHOD"];
 
-// Captura a categoria enviada pelo JS (ex: 'port' ou 'mat')
 $categoria = isset($_GET['cat']) ? $conn->real_escape_string($_GET['cat']) : '';
 
-switch ($method) {
+$status_filtro = isset($_GET['status']) ? $conn->real_escape_string($_GET['status']) : 'aprovado';
 
+switch ($method) {
     case "GET":
-        // --- NOVO: BUSCA POR ID ÚNICO ---
         if (isset($_GET['id'])) {
             $id = (int)$_GET['id'];
             $sql = "SELECT termos.*, turmas.nome_turma 
                     FROM termos 
                     INNER JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
-                    WHERE termos.id_termo = $id AND termos.status_termo = 'aprovado'";
+                    WHERE termos.id_termo = $id";
             
             $result = $conn->query($sql);
             if ($result->num_rows > 0) {
@@ -27,62 +26,45 @@ switch ($method) {
             }
             exit;
         }
-        
-        // ... (resto do seu código GET original que lista todos os termos)
-        // Adicione isto logo abaixo do switch ($method) ou dentro do GET se preferir separar por um parâmetro
-        if ($method === "GET" && isset($_GET['listar_turmas'])) {
+
+        if (isset($_GET['listar_turmas'])) {
             $sql = "SELECT id_turma, nome_turma FROM turmas ORDER BY nome_turma ASC";
             $result = $conn->query($sql);
             $turmas = [];
-            while ($row = $result->fetch_assoc()) {
-                $turmas[] = $row;
-            }
+            while ($row = $result->fetch_assoc()) { $turmas[] = $row; }
             echo json_encode(["success" => true, "data" => $turmas]);
             exit;
         }
-        $sql = "SELECT 
-                    termos.id_termo, 
-                    termos.nome_termo, 
-                    termos.descricao_termo, 
-                    termos.cat_termo, 
-                    termos.exemplo_termo, 
-                    termos.foto_termo, 
-                    termos.data_criacao, 
-                    termos.status_termo, 
-                    termos.nome_aluno, 
-                    turmas.nome_turma, 
-                    usuarios.nome_professor 
-                FROM termos 
-                INNER JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
-                LEFT JOIN usuarios ON termos.id_moderador = usuarios.id_usuario 
-                WHERE termos.status_termo = 'aprovado'";
 
-        // Se o JavaScript passar ?cat=port ou ?cat=mat, adicionamos o filtro
-        if ($categoria !== '') {
-            $sql .= " AND termos.cat_termo = '$categoria'";
+        // --- VALIDAÇÃO DA MATÉRIA ---
+        if ($categoria === '') {
+            echo json_encode(["success" => false, "message" => "A categoria (cat) é obrigatória para listar os termos."]);
+            exit;
         }
 
-        $sql .= " ORDER BY termos.nome_termo ASC";
+        // --- SQL DE LISTAGEM FILTRADA ---
+        $sql = "SELECT 
+                    termos.id_termo, termos.nome_termo, termos.descricao_termo, 
+                    termos.cat_termo, termos.foto_termo, termos.status_termo, 
+                    termos.nome_aluno, turmas.nome_turma 
+                FROM termos 
+                INNER JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
+                WHERE termos.cat_termo = '$categoria' 
+                AND termos.status_termo = '$status_filtro' 
+                ORDER BY termos.nome_termo ASC";
 
         $result = $conn->query($sql);
         $termos = [];
-
         if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $termos[] = $row;
-            }
+            while ($row = $result->fetch_assoc()) { $termos[] = $row; }
         }
 
-        echo json_encode([
-            "success" => true,
-            "data" => $termos
-        ]);
+        echo json_encode(["success" => true, "data" => $termos]);
         break;
 
         
 
         case "POST":
-        // Como enviamos FormData pelo JS, usamos $_POST e não json_decode
         if (!isset($_POST['nome_termo']) || !isset($_POST['descricao_termo']) || !isset($_POST['turmas_id_turma'])) {
             echo json_encode(["success" => false, "message" => "Dados incompletos no servidor."]);
             exit;
@@ -95,18 +77,16 @@ switch ($method) {
         $nome_aluno = $conn->real_escape_string($_POST['nome_aluno']);
         $id_turma = (int) $_POST['turmas_id_turma'];
 
-        // Lógica da Foto
         $foto_nome = null;
         if (isset($_FILES['foto_termo']) && $_FILES['foto_termo']['error'] === 0) {
             $diretorio = "../assets/uploads/";
             
-            // Cria a pasta se não existir
             if (!file_exists($diretorio)) {
                 mkdir($diretorio, 0777, true);
             }
 
             $extensao = pathinfo($_FILES['foto_termo']['name'], PATHINFO_EXTENSION);
-            $foto_nome = uniqid() . "." . $extensao; // Nome único
+            $foto_nome = uniqid() . "." . $extensao;
             
             move_uploaded_file($_FILES['foto_termo']['tmp_name'], $diretorio . $foto_nome);
         }
