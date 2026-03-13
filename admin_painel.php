@@ -103,6 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const tabs = document.querySelectorAll('.tab_btn');
     const modal = document.getElementById('editModal');
     const editForm = document.getElementById('editForm');
+    
+    // Variável de controle crucial
     let statusAtual = 'pendente'; 
 
     function atualizarResumoPainel() {
@@ -124,8 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    function carregarTermosAdmin(status = 'pendente') {
-        statusAtual = status;
+    function carregarTermosAdmin(status) {
+        statusAtual = status; // Atualiza o status global antes de renderizar
         listContainer.innerHTML = '<p style="text-align:center; padding:20px;">Buscando dados...</p>';
         
         fetch(`api/termos.php?status=${status}&cat=todos`) 
@@ -141,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderizarSugestoes(termos) {
         listContainer.innerHTML = '';
         if (!termos || termos.length === 0) {
-            listContainer.innerHTML = `<p style="padding:40px; text-align:center; color: #666;">Nenhuma sugestão encontrada em ${statusAtual}.</p>`;
+            listContainer.innerHTML = `<p style="padding:40px; text-align:center; color: #666;">Nenhum termo em "${statusAtual.toUpperCase()}".</p>`;
             return;
         }
 
@@ -151,10 +153,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const catIcon = termo.cat_termo === 'mat' ? 'calculate' : 'menu_book';
             const catLabel = termo.cat_termo === 'mat' ? 'Matemática' : 'Português';
 
-            // Lógica de botões condicionais para evitar botões repetidos no status atual
+            // --- LÓGICA DE FILTRO DOS BOTÕES ---
             let botoesHTML = '';
 
-            // Se NÃO estiver em aprovados, mostra o botão Aprovar
+            // 1. Mostrar APROVAR apenas se não estiver na aba Aprovadas
             if (statusAtual !== 'aprovado') {
                 botoesHTML += `
                     <button class="btn_approve" onclick="alterarStatus(${termo.id_termo}, 'aprovado')">
@@ -162,22 +164,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     </button>`;
             }
 
-            // O botão Editar sempre aparece
+            // 2. EDITAR sempre aparece
             botoesHTML += `
                 <button class="btn_edit_outline" onclick='abrirEdicao(${JSON.stringify(termo)})'>
                     <i class="material-icons">edit</i> Editar
                 </button>`;
 
-            // Se NÃO estiver em rejeitados, mostra o botão Rejeitar
+            // 3. REJEITAR apenas se não estiver na aba Rejeitadas
+            // Se estiver na aba Rejeitadas, mostramos o botão de EXCLUIR
             if (statusAtual !== 'reprovado') {
                 botoesHTML += `
                     <button class="btn_reject_outline" onclick="alterarStatus(${termo.id_termo}, 'reprovado')">
                         <i class="material-icons">cancel</i> Rejeitar
                     </button>`;
             } else {
-                // Se já estiver em rejeitados, você pode mostrar um botão de Excluir Permanente se quiser
                 botoesHTML += `
-                    <button class="btn_reject_outline" style="border-color: #ff4d4d; color: #ff4d4d;" onclick="excluirDefinitivo(${termo.id_termo})">
+                    <button class="btn_reject_outline" style="border-color: #d32f2f; color: #d32f2f;" onclick="excluirTermo(${termo.id_termo})">
                         <i class="material-icons">delete_forever</i> Excluir
                     </button>`;
             }
@@ -212,14 +214,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Altera status (Aprovar/Rejeitar)
     window.alterarStatus = function(id, novoStatus) {
-        const msg = novoStatus === 'aprovado' ? 'aprovar' : 'rejeitar';
-        if(!confirm(`Deseja realmente ${msg} este termo?`)) return;
+        const acaoTxt = novoStatus === 'aprovado' ? 'aprovar' : 'rejeitar';
+        if(!confirm(`Deseja realmente ${acaoTxt} este termo?`)) return;
 
         fetch('api/termos.php', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_termo: id, status_termo: novoStatus, acao: 'mudar_status' })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success) {
+                carregarTermosAdmin(statusAtual);
+                atualizarResumoPainel();
+            }
+        });
+    };
+
+    // Excluir definitivamente (Só para a aba Rejeitadas)
+    window.excluirTermo = function(id) {
+        if(!confirm("Tem certeza que deseja EXCLUIR permanentemente este termo do sistema?")) return;
+        
+        fetch('api/termos.php', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_termo: id })
         })
         .then(res => res.json())
         .then(res => {
@@ -268,10 +289,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Evento das Abas - Sincronizado com o ENUM do seu banco
     tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
+            
             const estados = ['pendente', 'aprovado', 'reprovado'];
             carregarTermosAdmin(estados[index]);
         });
@@ -279,6 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.onclick = function(e) { if (e.target == modal) closeEditModal(); }
 
+    // Inicialização
     atualizarResumoPainel();
     carregarTermosAdmin('pendente');
 });
