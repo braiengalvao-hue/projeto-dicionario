@@ -21,6 +21,9 @@
 
     <main class="form_container_desktop">
         <form id="cadastroTermo" enctype="multipart/form-data">
+            <input type="hidden" name="id_usuario" value="<?php echo $_SESSION['id_usuario']; ?>">
+<input type="hidden" name="nome_aluno" value="Professor"> 
+<input type="hidden" name="turmas_id_turma" value="0">
             <section class="form_section_card">
                 <h2 class="section_title_form">Informações do Termo</h2>
                 
@@ -70,29 +73,17 @@
                     <i class="fa-solid fa-paper-plane"></i> Enviar para Revisão
                 </button>
             </div>
+
+            
         </form>
     </main>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const selectTurma = document.getElementById('selectTurma');
     const fileInput = document.getElementById('file_upload');
     const fileNameDisplay = document.getElementById('file_name_display');
 
-    // 1. Carregar Turmas
-    fetch('api/termos.php?listar_turmas=true')
-        .then(response => response.json())
-        .then(resultado => {
-            if (resultado.success) {
-                selectTurma.innerHTML = '<option value="" disabled selected>Selecione sua turma</option>';
-                resultado.data.forEach(turma => {
-                    const option = `<option value="${turma.id_turma}">${turma.nome_turma}</option>`;
-                    selectTurma.insertAdjacentHTML('beforeend', option);
-                });
-            }
-        });
-
-    // 2. Mostrar nome do arquivo selecionado
+    // 1. Mostrar nome do arquivo selecionado
     fileInput.addEventListener('change', function() {
         if (this.files && this.files.length > 0) {
             fileNameDisplay.innerText = "Selecionado: " + this.files[0].name;
@@ -100,40 +91,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 3. Enviar Formulário com Imagem (FormData)
+    // 2. Enviar Formulário
     document.getElementById('cadastroTermo').addEventListener('submit', function(e) {
         e.preventDefault();
 
         const btnSubmit = document.querySelector('.btn_submit_form');
-        
-        // O FormData captura automaticamente todos os campos que possuem o atributo "name"
-        // inclusive o arquivo de imagem
         const formData = new FormData(this);
 
         btnSubmit.disabled = true;
         btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
 
+        // Verifique se o caminho 'api/termos.php' está correto em relação a este arquivo
         fetch('api/termos.php', {
             method: 'POST',
             body: formData 
-            // IMPORTANTE: Não defina Content-Type no Header quando usar FormData com arquivos!
-            // O navegador fará isso automaticamente como "multipart/form-data"
         })
-        .then(response => response.json())
+        .then(response => {
+            // Se o servidor retornar erro (404, 500), joga para o catch
+            if (!response.ok) {
+                throw new Error('Erro na resposta do servidor');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                alert('Sugestão enviada com sucesso! Aguarde a revisão do professor.');
-                window.location.href = 'index.php';
+                alert('Termo cadastrado com sucesso!');
+                window.location.href = 'painel_admin.php'; // Redireciona para o painel
             } else {
-                alert('Erro ao enviar: ' + data.message);
+                alert('Erro do Banco: ' + data.message);
                 btnSubmit.disabled = false;
                 btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar para Revisão';
             }
         })
         .catch(err => {
-            console.error(err);
-            alert('Erro na conexão com o servidor.');
+            console.error("ERRO DETALHADO:", err);
+            alert('Não foi possível conectar ao servidor. Verifique o console (F12).');
             btnSubmit.disabled = false;
+            btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Tentar Novamente';
         });
     });
 });
