@@ -314,7 +314,7 @@ body {
     flex-direction: column;
     justify-content: start;
     gap: 4px;
-    margin-left: 8px;
+    margin-left: 3%;
 }
 
 .badge_category {
@@ -717,15 +717,16 @@ body {
     margin-bottom: 8px;
 }
 
-.badge_category_alt {
-    background-color: #E0E7FF;
-    color: #4338CA;
+.badge_category{
+    background-color: var(--primary_blue);
+    color: #fff;
     padding: 4px 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 12px;
     font-weight: 600;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
 }
 
