@@ -2,8 +2,6 @@
 session_start();
 require_once '../config/db.php'; 
 header('Content-Type: application/json');
-error_reporting(0); 
-header('Content-Type: application/json');
 
 $method = $_SERVER["REQUEST_METHOD"];
 
@@ -17,26 +15,26 @@ switch ($method) {
         
         // 1. ROTA PARA CONTADORES DO PAINEL ADMIN
 // 1. ROTA PARA CONTADORES DO PAINEL ADMIN
-        if (isset($_GET['contar_status'])) {
-            $sql = "SELECT 
-                        SUM(CASE WHEN status_termo = 'pendente' THEN 1 ELSE 0 END) as pendentes,
-                        SUM(CASE WHEN status_termo = 'aprovado' THEN 1 ELSE 0 END) as aprovados,
-                        SUM(CASE WHEN status_termo = 'reprovado' THEN 1 ELSE 0 END) as reprovados
-                    FROM termos";
-            
-            $result = $conn->query($sql);
-            $contagens = $result->fetch_assoc();
-            
-            echo json_encode([
-                "success" => true, 
-                "data" => [
-                    "pendente" => (int)$contagens['pendentes'],
-                    "aprovado" => (int)$contagens['aprovados'],
-                    "reprovado" => (int)$contagens['reprovados'] // Alterado de rejeitado para reprovado
-                ]
-            ]);
-            exit;
-        }
+    if (isset($_GET['contar_status'])) {
+        $sql = "SELECT 
+                    SUM(CASE WHEN status_termo = 'pendente' THEN 1 ELSE 0 END) as pendentes,
+                    SUM(CASE WHEN status_termo = 'aprovado' THEN 1 ELSE 0 END) as aprovados,
+                    SUM(CASE WHEN status_termo = 'reprovado' THEN 1 ELSE 0 END) as reprovados
+                FROM termos";
+        
+        $result = $conn->query($sql);
+        $contagens = $result->fetch_assoc();
+        
+        echo json_encode([
+            "success" => true, 
+            "data" => [
+                "pendente" => (int)$contagens['pendentes'],
+                "aprovado" => (int)$contagens['aprovados'],
+                "reprovado" => (int)$contagens['reprovados'] // Alterado de rejeitado para reprovado
+            ]
+        ]);
+        exit;
+    }
 
         // 2. LISTAGEM DE TERMOS (Com filtros de Categoria e Status)
         $where = "WHERE 1=1";
@@ -65,7 +63,7 @@ switch ($method) {
         break;
 
     case "POST":
- case "POST":
+        // CRIAÇÃO DE TERMO
         $nome_termo = $conn->real_escape_string($_POST['nome_termo']);
         $descricao = $conn->real_escape_string($_POST['descricao_termo']);
         $exemplo = isset($_POST['exemplo_termo']) ? $conn->real_escape_string($_POST['exemplo_termo']) : '';
@@ -73,11 +71,8 @@ switch ($method) {
         $nome_aluno = $conn->real_escape_string($_POST['nome_aluno']);
         $id_turma = (int) $_POST['turmas_id_turma'];
 
-        // Se o professor está logado, já inserimos como 'aprovado'
-        $status = (isset($_SESSION['id_usuario'])) ? 'aprovado' : 'pendente';
-
-        $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo, data_criacao) 
-                VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_aluno', $id_turma, '$status', NOW())";
+        $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo) 
+                VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_aluno', $id_turma, 'pendente')";
 
         if ($conn->query($sql)) {
             echo json_encode(["success" => true, "id_termo" => $conn->insert_id]);
@@ -85,6 +80,7 @@ switch ($method) {
             echo json_encode(["success" => false, "message" => $conn->error]);
         }
         break;
+
     case "PUT":
         if (!isset($_SESSION['id_usuario'])) {
             echo json_encode(["success" => false, "message" => "Acesso negado."]);
