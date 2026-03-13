@@ -128,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
     // --- LÓGICA DO MODAL (DENTRO DO MESMO DOMContentLoaded) ---
+   // Dentro do seu DOMContentLoaded, após o fetch ou no final
     const modal = document.getElementById("imageModal");
     const img = document.querySelector(".featured_image");
     const modalImg = document.getElementById("img01");
@@ -135,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const span = document.querySelector(".close_modal");
 
     img.onclick = function() {
-        modal.style.display = "block";
+        modal.style.display = "flex"; // Usamos flex para centralizar
         modalImg.src = this.src;
         captionText.innerHTML = this.alt;
     }
@@ -144,6 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = "none";
     }
 
+    // Fecha se clicar no fundo escuro
     window.onclick = function(event) {
         if (event.target == modal) {
             modal.style.display = "none";
