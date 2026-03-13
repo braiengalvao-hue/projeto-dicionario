@@ -5,28 +5,13 @@ header('Content-Type: application/json');
 
 $method = $_SERVER["REQUEST_METHOD"];
 
+// Captura de parâmetros via GET
 $categoria = isset($_GET['cat']) ? $conn->real_escape_string($_GET['cat']) : '';
-
 $status_filtro = isset($_GET['status']) ? $conn->real_escape_string($_GET['status']) : 'aprovado';
 
 switch ($method) {
     case "GET":
-        if (isset($_GET['id'])) {
-            $id = (int)$_GET['id'];
-            $sql = "SELECT termos.*, turmas.nome_turma 
-                    FROM termos 
-                    INNER JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
-                    WHERE termos.id_termo = $id";
-            
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
-                echo json_encode(["success" => true, "data" => $result->fetch_assoc()]);
-            } else {
-                echo json_encode(["success" => false, "message" => "Termo não encontrado."]);
-            }
-            exit;
-        }
-        // --- NOVO: ROTA PARA CONTADORES DO PAINEL ADMIN ---
+        // 1. ROTA PARA CONTADORES DO PAINEL ADMIN
         if (isset($_GET['contar_status'])) {
             $sql = "SELECT 
                         SUM(CASE WHEN status_termo = 'pendente' THEN 1 ELSE 0 END) as pendentes,
@@ -48,49 +33,34 @@ switch ($method) {
             exit;
         }
 
-        if (isset($_GET['listar_turmas'])) {
-            $sql = "SELECT id_turma, nome_turma FROM turmas ORDER BY nome_turma ASC";
-            $result = $conn->query($sql);
-            $turmas = [];
-            while ($row = $result->fetch_assoc()) { $turmas[] = $row; }
-            echo json_encode(["success" => true, "data" => $turmas]);
-            exit;
+        // 2. LISTAGEM DE TERMOS (Com filtros de Categoria e Status)
+        $where = "WHERE 1=1";
+        
+        if ($status_filtro !== '') {
+            $where .= " AND status_termo = '$status_filtro'";
         }
 
-        // --- VALIDAÇÃO DA MATÉRIA ---
-        if ($categoria === '') {
-            echo json_encode(["success" => false, "message" => "A categoria (cat) é obrigatória para listar os termos."]);
-            exit;
+        if ($categoria !== 'todos' && $categoria !== '') {
+            $where .= " AND cat_termo = '$categoria'";
         }
 
-        // --- SQL DE LISTAGEM FILTRADA ---
-        $sql = "SELECT 
-                    termos.id_termo, termos.nome_termo, termos.descricao_termo, 
-                    termos.cat_termo, termos.foto_termo, termos.status_termo, 
-                    termos.nome_aluno, turmas.nome_turma 
+        $sql = "SELECT termos.*, turmas.nome_turma 
                 FROM termos 
-                INNER JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
-                WHERE termos.cat_termo = '$categoria' 
-                AND termos.status_termo = '$status_filtro' 
-                ORDER BY termos.nome_termo ASC";
+                LEFT JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
+                $where 
+                ORDER BY termos.data_criacao DESC";
 
         $result = $conn->query($sql);
         $termos = [];
         if ($result) {
             while ($row = $result->fetch_assoc()) { $termos[] = $row; }
         }
-
+        
         echo json_encode(["success" => true, "data" => $termos]);
         break;
 
-        
-
-        case "POST":
-        if (!isset($_POST['nome_termo']) || !isset($_POST['descricao_termo']) || !isset($_POST['turmas_id_turma'])) {
-            echo json_encode(["success" => false, "message" => "Dados incompletos no servidor."]);
-            exit;
-        }
-
+    case "POST":
+        // CRIAÇÃO DE TERMO
         $nome_termo = $conn->real_escape_string($_POST['nome_termo']);
         $descricao = $conn->real_escape_string($_POST['descricao_termo']);
         $exemplo = isset($_POST['exemplo_termo']) ? $conn->real_escape_string($_POST['exemplo_termo']) : '';
@@ -98,24 +68,10 @@ switch ($method) {
         $nome_aluno = $conn->real_escape_string($_POST['nome_aluno']);
         $id_turma = (int) $_POST['turmas_id_turma'];
 
-        $foto_nome = null;
-        if (isset($_FILES['foto_termo']) && $_FILES['foto_termo']['error'] === 0) {
-            $diretorio = "../assets/uploads/";
-            
-            if (!file_exists($diretorio)) {
-                mkdir($diretorio, 0777, true);
-            }
+        $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo) 
+                VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_aluno', $id_turma, 'pendente')";
 
-            $extensao = pathinfo($_FILES['foto_termo']['name'], PATHINFO_EXTENSION);
-            $foto_nome = uniqid() . "." . $extensao;
-            
-            move_uploaded_file($_FILES['foto_termo']['tmp_name'], $diretorio . $foto_nome);
-        }
-
-        $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, foto_termo, status_termo) 
-                VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_aluno', $id_turma, " . ($foto_nome ? "'$foto_nome'" : "NULL") . ", 'pendente')";
-
-        if ($conn->query($sql) === TRUE) {
+        if ($conn->query($sql)) {
             echo json_encode(["success" => true, "id_termo" => $conn->insert_id]);
         } else {
             echo json_encode(["success" => false, "message" => $conn->error]);
@@ -130,39 +86,30 @@ switch ($method) {
 
         $data = json_decode(file_get_contents("php://input"));
         $id_termo = (int) $data->id_termo;
-        $status = $conn->real_escape_string($data->status_termo);
         $id_moderador = (int) $_SESSION['id_usuario'];
 
-        $sql = "UPDATE termos 
-                SET termos.status_termo = '$status', 
-                    termos.id_moderador = $id_moderador, 
-                    termos.data_aprovacao = NOW() 
-                WHERE termos.id_termo = $id_termo";
-
-        if ($conn->query($sql) === TRUE) {
-            echo json_encode(["success" => true, "message" => "Termo atualizado."]);
-        } else {
-            echo json_encode(["success" => false, "message" => $conn->error]);
+        // AÇÃO: Mudar Status (Aprovar/Rejeitar)
+        if (isset($data->acao) && $data->acao === 'mudar_status') {
+            $status = $conn->real_escape_string($data->status_termo);
+            $sql = "UPDATE termos SET status_termo = '$status', id_moderador = $id_moderador, data_aprovacao = NOW() WHERE id_termo = $id_termo";
+        } 
+        // AÇÃO: Editar Conteúdo
+        else {
+            $titulo = $conn->real_escape_string($data->nome_termo);
+            $desc = $conn->real_escape_string($data->descricao_termo);
+            $ex = $conn->real_escape_string($data->exemplo_termo);
+            $sql = "UPDATE termos SET nome_termo = '$titulo', descricao_termo = '$desc', exemplo_termo = '$ex' WHERE id_termo = $id_termo";
         }
-        break;
 
-    case "DELETE":
-        if (!isset($_SESSION['id_usuario'])) {
-            echo json_encode(["success" => false, "message" => "Acesso negado."]);
-            exit;
-        }
-        $data = json_decode(file_get_contents("php://input"));
-        $id_termo = (int) $data->id_termo;
-        $sql = "DELETE FROM termos WHERE termos.id_termo = $id_termo";
-
-        if ($conn->query($sql) === TRUE) {
-            echo json_encode(["success" => true, "message" => "Termo excluído."]);
+        if ($conn->query($sql)) {
+            echo json_encode(["success" => true]);
         } else {
             echo json_encode(["success" => false, "message" => $conn->error]);
         }
         break;
 
     default:
-        echo json_encode(["success" => false, "message" => "Método inválido."]);
+        http_response_code(405);
+        echo json_encode(["success" => false, "message" => "Método não suportado."]);
         break;
 }
