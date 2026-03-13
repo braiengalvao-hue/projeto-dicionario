@@ -98,13 +98,12 @@ if (!isset($_SESSION['id_usuario'])) {
     </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const listContainer = document.querySelector('.list_container');
     const tabs = document.querySelectorAll('.tab_btn');
     const modal = document.getElementById('editModal');
     const editForm = document.getElementById('editForm');
     
-    // Variável de controle crucial
     let statusAtual = 'pendente'; 
 
     function atualizarResumoPainel() {
@@ -113,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(res => {
                 if (res.success) {
                     const d = res.data;
+                    // Sincronizado com o nome 'reprovado' que vem da sua API
                     const totalReprovados = d.reprovado || 0;
 
                     document.querySelector('.summary_card.pending .count').innerText = d.pendente;
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function carregarTermosAdmin(status) {
-        statusAtual = status; // Atualiza o status global antes de renderizar
+        statusAtual = status; 
         listContainer.innerHTML = '<p style="text-align:center; padding:20px;">Buscando dados...</p>';
         
         fetch(`api/termos.php?status=${status}&cat=todos`) 
@@ -136,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderizarSugestoes(resultado.data);
             })
             .catch(err => {
+                console.error(err);
                 listContainer.innerHTML = '<p style="padding:20px; text-align:center;">Erro de conexão.</p>';
             });
     }
@@ -153,10 +154,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const catIcon = termo.cat_termo === 'mat' ? 'calculate' : 'menu_book';
             const catLabel = termo.cat_termo === 'mat' ? 'Matemática' : 'Português';
 
-            // --- LÓGICA DE FILTRO DOS BOTÕES ---
             let botoesHTML = '';
 
-            // 1. Mostrar APROVAR apenas se não estiver na aba Aprovadas
+            // Botão Aprovar: Aparece em Pendentes e Reprovados
             if (statusAtual !== 'aprovado') {
                 botoesHTML += `
                     <button class="btn_approve" onclick="alterarStatus(${termo.id_termo}, 'aprovado')">
@@ -164,20 +164,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     </button>`;
             }
 
-            // 2. EDITAR sempre aparece
+            // Botão Editar: Sempre aparece
             botoesHTML += `
                 <button class="btn_edit_outline" onclick='abrirEdicao(${JSON.stringify(termo)})'>
                     <i class="material-icons">edit</i> Editar
                 </button>`;
 
-            // 3. REJEITAR apenas se não estiver na aba Rejeitadas
-            // Se estiver na aba Rejeitadas, mostramos o botão de EXCLUIR
+            // Lógica Rejeitar vs Excluir
             if (statusAtual != 'reprovado') {
+                // Se já está reprovado, mostra botão de EXCLUIR definitivo
                 botoesHTML += `
-                    <button class="btn_reject_outline" onclick="alterarStatus(${termo.id_termo}, 'reprovado')">
-                        <i class="material-icons">cancel</i> Rejeitar
+                    <button class="btn_reject_outline" style="color: #d32f2f; border-color: #d32f2f;" onclick="excluirTermo(${termo.id_termo})">
+                        <i class="material-icons">delete_forever</i> Excluir
                     </button>`;
-            }
+            } 
 
             const card = `
                 <div class="suggestion_card">
@@ -209,7 +209,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Altera status (Aprovar/Rejeitar)
     window.alterarStatus = function(id, novoStatus) {
         const acaoTxt = novoStatus === 'aprovado' ? 'aprovar' : 'rejeitar';
         if(!confirm(`Deseja realmente ${acaoTxt} este termo?`)) return;
@@ -228,12 +227,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // Excluir definitivamente (Só para a aba Rejeitadas)
     window.excluirTermo = function(id) {
-        if(!confirm("Tem certeza que deseja EXCLUIR permanentemente este termo do sistema?")) return;
+        if(!confirm("Tem certeza que deseja EXCLUIR permanentemente este termo?")) return;
         
         fetch('api/termos.php', {
-            method: 'DELETE',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_termo: id })
         })
@@ -242,6 +240,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if(res.success) {
                 carregarTermosAdmin(statusAtual);
                 atualizarResumoPainel();
+            } else {
+                alert("Erro ao excluir: " + res.message);
             }
         });
     };
@@ -284,12 +284,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Evento das Abas - Sincronizado com o ENUM do seu banco
     tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            
             const estados = ['pendente', 'aprovado', 'reprovado'];
             carregarTermosAdmin(estados[index]);
         });
@@ -297,10 +295,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.onclick = function(e) { if (e.target == modal) closeEditModal(); }
 
-    // Inicialização
     atualizarResumoPainel();
     carregarTermosAdmin('pendente');
-});
+}); 
 </script>
 </body>
 </html>

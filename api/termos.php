@@ -113,9 +113,21 @@ switch ($method) {
             echo json_encode(["success" => false, "message" => $conn->error]);
         }
         break;
-
+    
+        case 'PATCH':
+            // EXCLUSÃO DE TERMO (Mudar status para 'reprovado')
+            $data = json_decode(file_get_contents("php://input"));
+            $id_termo = (int) $data->id_termo;
+            $sql = "UPDATE termos SET status_termo = 'reprovado' WHERE id_termo = $id_termo";
+    
+            if ($conn->query($sql)) {
+                echo json_encode(["success" => true]);
+            } else {
+                echo json_encode(["success" => false, "message" => $conn->error]);
+            }
+            break;  
     default:
         http_response_code(405);
-        echo json_encode(["success" => false, "message" => "Método não suportado."]);
+        echo json_encode(["success" => false, "message" => "$method Método não suportado."]);
         break;
 }
