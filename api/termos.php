@@ -2,6 +2,8 @@
 session_start();
 require_once '../config/db.php'; 
 header('Content-Type: application/json');
+error_reporting(0); 
+header('Content-Type: application/json');
 
 $method = $_SERVER["REQUEST_METHOD"];
 
@@ -63,7 +65,7 @@ switch ($method) {
         break;
 
     case "POST":
-        // CRIAÇÃO DE TERMO
+ case "POST":
         $nome_termo = $conn->real_escape_string($_POST['nome_termo']);
         $descricao = $conn->real_escape_string($_POST['descricao_termo']);
         $exemplo = isset($_POST['exemplo_termo']) ? $conn->real_escape_string($_POST['exemplo_termo']) : '';
@@ -71,8 +73,11 @@ switch ($method) {
         $nome_aluno = $conn->real_escape_string($_POST['nome_aluno']);
         $id_turma = (int) $_POST['turmas_id_turma'];
 
-        $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo) 
-                VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_aluno', $id_turma, 'pendente')";
+        // Se o professor está logado, já inserimos como 'aprovado'
+        $status = (isset($_SESSION['id_usuario'])) ? 'aprovado' : 'pendente';
+
+        $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo, data_criacao) 
+                VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria_post', '$nome_aluno', $id_turma, '$status', NOW())";
 
         if ($conn->query($sql)) {
             echo json_encode(["success" => true, "id_termo" => $conn->insert_id]);
@@ -80,7 +85,6 @@ switch ($method) {
             echo json_encode(["success" => false, "message" => $conn->error]);
         }
         break;
-
     case "PUT":
         if (!isset($_SESSION['id_usuario'])) {
             echo json_encode(["success" => false, "message" => "Acesso negado."]);
