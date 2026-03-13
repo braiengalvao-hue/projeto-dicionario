@@ -11,6 +11,22 @@ $status_filtro = isset($_GET['status']) ? $conn->real_escape_string($_GET['statu
 
 switch ($method) {
     case "GET":
+        // 1. ROTA PARA BUSCAR UM ÚNICO TERMO PELO ID
+        if (isset($_GET['id'])) {
+            $id = (int)$_GET['id'];
+            $sql = "SELECT termos.*, turmas.nome_turma 
+                    FROM termos 
+                    LEFT JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
+                    WHERE id_termo = $id";
+            
+            $result = $conn->query($sql);
+            if ($result && $result->num_rows > 0) {
+                echo json_encode(["success" => true, "data" => $result->fetch_assoc()]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Termo não encontrado."]);
+            }
+            exit;
+        }
         // 1. ROTA PARA CONTADORES DO PAINEL ADMIN
         if (isset($_GET['contar_status'])) {
             $sql = "SELECT 
