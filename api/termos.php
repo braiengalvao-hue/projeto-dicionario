@@ -26,6 +26,27 @@ switch ($method) {
             }
             exit;
         }
+        // --- NOVO: ROTA PARA CONTADORES DO PAINEL ADMIN ---
+        if (isset($_GET['contar_status'])) {
+            $sql = "SELECT 
+                        SUM(CASE WHEN status_termo = 'pendente' THEN 1 ELSE 0 END) as pendentes,
+                        SUM(CASE WHEN status_termo = 'aprovado' THEN 1 ELSE 0 END) as aprovados,
+                        SUM(CASE WHEN status_termo = 'rejeitado' THEN 1 ELSE 0 END) as rejeitados
+                    FROM termos";
+            
+            $result = $conn->query($sql);
+            $contagens = $result->fetch_assoc();
+            
+            echo json_encode([
+                "success" => true, 
+                "data" => [
+                    "pendente" => (int)$contagens['pendentes'],
+                    "aprovado" => (int)$contagens['aprovados'],
+                    "rejeitado" => (int)$contagens['rejeitados']
+                ]
+            ]);
+            exit;
+        }
 
         if (isset($_GET['listar_turmas'])) {
             $sql = "SELECT id_turma, nome_turma FROM turmas ORDER BY nome_turma ASC";
