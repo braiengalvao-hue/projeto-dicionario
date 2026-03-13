@@ -256,7 +256,7 @@ if (!isset($_SESSION['id_usuario'])) {
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                const estados = ['pendente', 'aprovado', 'rejeitado'];
+                const estados = ['pendente', 'aprovado', 'reprovado'];
                 carregarTermosAdmin(estados[index]);
             });
         });

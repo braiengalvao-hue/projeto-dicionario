@@ -16,7 +16,7 @@ switch ($method) {
             $sql = "SELECT 
                         SUM(CASE WHEN status_termo = 'pendente' THEN 1 ELSE 0 END) as pendentes,
                         SUM(CASE WHEN status_termo = 'aprovado' THEN 1 ELSE 0 END) as aprovados,
-                        SUM(CASE WHEN status_termo = 'rejeitado' THEN 1 ELSE 0 END) as rejeitados
+                        SUM(CASE WHEN status_termo = 'reprovado' THEN 1 ELSE 0 END) as rejeitados
                     FROM termos";
             
             $result = $conn->query($sql);
