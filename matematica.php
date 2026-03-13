@@ -58,7 +58,7 @@
 
     <div class="fab_container">
             <a class="fab_button" href="adicionar_termo.php" title="Novo Termo"><i class="material-icons">add</i></a>
-    </div>
+    </div> 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const listContainer = document.querySelector('.list_container');
