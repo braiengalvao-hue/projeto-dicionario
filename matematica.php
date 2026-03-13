@@ -31,30 +31,10 @@
         </div>
     </header>
 
-    <main class="scroll_content">
-        <div class="list_container">
-            
-            <div class="term_card">
-                <img src="assets/images/icon_not_faund.svg" alt="Icone de imagem" class="term_image">
-                <div class="term_info">
-                    <h3>Coesão</h3>
-                    <p>Propriedade que garante a conexão entre as partes de um texto, tornando-o um todo unificado e compreensível.</p>
-                </div>
-                <a href="termos.php"><i class="fa-solid fa-arrow-right arrow_icon"></i>
-</a>
-            </div>
-
-            <div class="term_card">
-                <img src="assets/images/icon_not_faund.svg" alt="Icone de imagem" class="term_image">
-                <div class="term_info">
-                    <h3>Predicado</h3>
-                    <p>Tudo aquilo que se declara sobre o sujeito da oração, contendo obrigatoriamente um verbo ou locução verbal.</p>
-                </div>
-                <i class="fa-solid fa-arrow-right arrow_icon"></i>
-            </div>
-
-            </div>
-    </main>
+<main class="scroll_content">
+    <div class="list_container">
+        </div>
+</main>
 
     <div class="fab_container">
             <a class="fab_button" href="adicionar_termo.php" title="Novo Termo"><i class="material-icons">add</i></a>
@@ -68,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Função para carregar os termos filtrados por Português e Aprovados
     function carregarTermos() {
         // Adicione &status=aprovado na URL
-        fetch('api/termos.php?cat=port&status=aprovado') 
+        fetch('api/termos.php?cat=mat&status=aprovado') 
             .then(response => response.json())
             .then(resultado => {
             // ... resto do código
@@ -90,7 +70,9 @@ document.addEventListener('DOMContentLoaded', function() {
     listContainer.innerHTML = ''; 
 
     termos.forEach(termo => {
-        const imagem = termo.foto_termo ? termo.foto_termo : 'assets/images/mat.png';
+       const imagem = termo.foto_termo 
+            ? `assets/uploads/${termo.foto_termo}` 
+            : 'assets/images/mat.png';
 
         // Criamos o HTML do card
         const cardHTML = `

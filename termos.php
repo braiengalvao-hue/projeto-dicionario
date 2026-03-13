@@ -73,83 +73,95 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // Seleção dos elementos do HTML
+    const termTitle = document.querySelector('.term_main_title');
+    const badge = document.querySelector('.badge_category');
+    const btnVoltar = document.getElementById('btn_voltar');
+    const imgElement = document.querySelector('.featured_image');
+    const infoCards = document.querySelectorAll('.info_card p');
+    const collabName = document.querySelector('.collab_name strong');
+    const collabClass = document.querySelector('.collab_class');
+
     // --- BUSCA DOS DADOS DO TERMO ---
     fetch(`api/termos.php?id=${termoId}`)
-        .then(response => response.json())
-        .then(res => {
-            if (res.success) {
-                const termo = res.data;
+    .then(response => {
+        if (!response.ok) throw new Error('Erro na rede');
+        return response.json();
+    })
+    .then(res => {
+        console.log("Resposta da API:", res); // Debug para você ver no F12
 
-                // 1. Título da Aba e do Cabeçalho
-                document.title = `${termo.nome_termo} - Dicionário Técnico`;
-                document.querySelector('.term_main_title').innerText = termo.nome_termo;
-                console.log(termo)
+        if (res.success && res.data) {
+            // O segredo está aqui: acessamos res.data, não res.success
+            const termo = res.data;
 
-                // 2. Categoria e Lógica do Botão Voltar
-                const badge = document.querySelector('.badge_category');
-                const btnVoltar = document.getElementById('btn_voltar');
+            // 1. Título
+            document.title = `${termo.nome_termo} - Dicionário Técnico`;
+            termTitle.innerText = termo.nome_termo;
 
-                if (termo.cat_termo === 'port') {
-                    badge.innerText = 'Português';
-                    btnVoltar.href = 'portugues.php';
-                } else {
-                    badge.innerText = 'Matemática';
-                    btnVoltar.href = 'matematica.php';
-                }
-                
-                // 3. Imagem (AJUSTADO COM O CAMINHO DA PASTA)
-                const imgElement = document.querySelector('.featured_image');
-                
-                if (termo.foto_termo) {
-                    // Se houver foto no banco, concatena com a pasta de uploads
-                    imgElement.src = `assets/uploads/${termo.foto_termo}`;
-                } else {
-                    // Se não houver, usa a imagem padrão da categoria
-                    imgElement.src = termo.cat_termo === 'port' ? 'assets/images/port.png' : 'assets/images/mat.png';
-                }
-                imgElement.alt = termo.nome_termo;
-
-                // 4. Conteúdo (Descrição e Exemplo)
-                const cards = document.querySelectorAll('.info_card p');
-                cards[0].innerText = termo.descricao_termo;
-                cards[1].innerText = termo.exemplo_termo || "Nenhum exemplo prático fornecido para este termo.";
-
-                // 5. Rodapé (Aluno e Turma)
-                document.querySelector('.collab_name strong').innerText = termo.nome_aluno;
-                document.querySelector('.collab_class').innerText = `Turma: ${termo.nome_turma}`;
-                
+            // 2. Categoria e Link Voltar
+            if (termo.cat_termo === 'port') {
+                badge.innerText = 'Português';
+                badge.classList.add('port'); // Certifique-se de ter essa cor no CSS
+                btnVoltar.href = 'portugues.php';
+            } else if (termo.cat_termo === 'mat') {
+                badge.innerText = 'Matemática';
+                badge.classList.add('math');
+                btnVoltar.href = 'matematica.php';
             } else {
-                alert('Termo não encontrado ou ainda pendente de aprovação.');
-                window.location.href = 'index.php';
+                badge.innerText = 'Geral';
+                btnVoltar.href = 'index.php';
             }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            alert('Erro ao conectar com o servidor.');
-        });
 
-    // --- LÓGICA DO MODAL (DENTRO DO MESMO DOMContentLoaded) ---
+            // 3. Imagem
+            if (termo.foto_termo) {
+                imgElement.src = `assets/uploads/${termo.foto_termo}`;
+            } else {
+                // Imagem padrão caso não tenha foto
+                imgElement.src = termo.cat_termo === 'port' ? 'assets/images/port_default.png' : 'assets/images/mat_default.png';
+            }
+            imgElement.alt = termo.nome_termo;
+
+            // 4. Descrição e Exemplo
+            // infoCards[0] é a Descrição, infoCards[1] é o Exemplo
+            if (infoCards[0]) infoCards[0].innerText = termo.descricao_termo;
+            if (infoCards[1]) infoCards[1].innerText = termo.exemplo_termo || "Nenhum exemplo prático fornecido.";
+
+            // 5. Rodapé
+            if (collabName) collabName.innerText = termo.nome_aluno || 'Autor Desconhecido';
+            if (collabClass) collabClass.innerText = `Turma: ${termo.nome_turma || 'N/I'}`;
+
+        } else {
+            alert('Termo não encontrado.');
+            window.location.href = 'index.php';
+        }
+    })
+    .catch(error => {
+        console.error('Erro detalhado:', error);
+        termTitle.innerText = "Erro ao carregar";
+    });
+
+    // --- LÓGICA DO MODAL DE IMAGEM ---
     const modal = document.getElementById("imageModal");
-    const img = document.querySelector(".featured_image");
     const modalImg = document.getElementById("img01");
     const captionText = document.getElementById("caption");
-    const span = document.querySelector(".close_modal");
+    const closeBtn = document.querySelector(".close_modal");
 
-    img.onclick = function() {
-        modal.style.display = "block";
-        modalImg.src = this.src;
-        captionText.innerHTML = this.alt;
+    if (imgElement) {
+        imgElement.onclick = function() {
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+        };
     }
 
-    span.onclick = function() {
-        modal.style.display = "none";
+    if (closeBtn) {
+        closeBtn.onclick = () => modal.style.display = "none";
     }
 
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
+    window.onclick = (event) => {
+        if (event.target == modal) modal.style.display = "none";
+    };
 });
 </script>
 </body>
