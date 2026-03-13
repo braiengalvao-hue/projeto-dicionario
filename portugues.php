@@ -69,10 +69,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const termCountText = document.querySelector('.title_group span');
 
     // Função para carregar os termos filtrados por Português e Aprovados
+
     function carregarTermos() {
-        fetch('api/termos.php?cat=port')
+        // Adicione &status=aprovado na URL
+        fetch('api/termos.php?cat=port&status=aprovado') 
             .then(response => response.json())
             .then(resultado => {
+            // ... resto do código
                 if (resultado.success && resultado.data.length > 0) {
                     renderizarLista(resultado.data);
                     termCountText.innerText = `${resultado.data.length} termos disponíveis`;
