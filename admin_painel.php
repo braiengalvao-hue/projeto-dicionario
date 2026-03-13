@@ -107,7 +107,7 @@ if (!isset($_SESSION['id_usuario'])) {
         <a class="fab_button" href="adicionar_termo.php">
             <i class="material-icons">add</i>
         </a>
-        <a class="fab_button fab_user_outline" href="cadastrar_usuarios.php">
+        <a class="fab_button fab_user_outline" href="cadastrar.php">
             <i class="material-icons">person_add</i>
         </a>
     </div>
