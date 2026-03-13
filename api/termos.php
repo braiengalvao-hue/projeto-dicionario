@@ -66,6 +66,32 @@ switch ($method) {
         break;
 
     case "POST":
+
+                if(isset($_SESSION['id_usuario'])) {
+            $nome_termo = $_POST['nome_termo'] ?? '';
+            $descricao = $_POST['descricao_termo'] ?? '';
+            $exemplo = $_POST['exemplo_termo'] ?? '';
+            $categoria = $_POST['cat_termo'] ?? 'port';
+            
+            // Se você removeu do HTML, defina valores padrão ou aceite NULL
+            $nome_aluno = $_POST['nome_professor'] ?? 'Anônimo'; 
+            $_POST['turmas_id_turma'] = 11; 
+            $id_turma = isset($_POST['turmas_id_turma']) ? (int)$_POST['turmas_id_turma'] : 0;
+
+            // Verifique se o SQL não vai falhar por falta de colunas obrigatórias
+            $sql = "INSERT INTO termos (nome_termo, descricao_termo, exemplo_termo, cat_termo, nome_aluno, turmas_id_turma, status_termo) 
+                    VALUES ('$nome_termo', '$descricao', '$exemplo', '$categoria', '$nome_aluno', $id_turma, 'pendente')";
+
+            if ($conn->query($sql)) {
+                echo json_encode(["success" => true]);
+            } else {
+                // Isso garante que o JS receba um JSON mesmo em erro de banco
+                echo json_encode(["success" => false, "message" => $conn->error]);
+            }
+            exit;
+        }
+
+
         // CRIAÇÃO DE TERMO
         $nome_termo = $conn->real_escape_string($_POST['nome_termo']);
         $descricao = $conn->real_escape_string($_POST['descricao_termo']);
@@ -85,6 +111,11 @@ switch ($method) {
         break;
 
     case "PUT":
+
+        
+
+
+
         if (!isset($_SESSION['id_usuario'])) {
             echo json_encode(["success" => false, "message" => "Acesso negado."]);
             exit;

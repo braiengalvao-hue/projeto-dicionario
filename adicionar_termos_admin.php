@@ -75,22 +75,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const selectTurma = document.getElementById('selectTurma');
     const fileInput = document.getElementById('file_upload');
     const fileNameDisplay = document.getElementById('file_name_display');
-
-    // 1. Carregar Turmas
-    fetch('api/termos.php?listar_turmas=true')
-        .then(response => response.json())
-        .then(resultado => {
-            if (resultado.success) {
-                selectTurma.innerHTML = '<option value="" disabled selected>Selecione sua turma</option>';
-                resultado.data.forEach(turma => {
-                    const option = `<option value="${turma.id_turma}">${turma.nome_turma}</option>`;
-                    selectTurma.insertAdjacentHTML('beforeend', option);
-                });
-            }
-        });
 
     // 2. Mostrar nome do arquivo selecionado
     fileInput.addEventListener('change', function() {
@@ -132,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(err => {
             console.error(err);
-            alert('Erro na conexão com o servidor.');
+            alert(err +'Erro na conexão com o servidor.');
             btnSubmit.disabled = false;
         });
     });
