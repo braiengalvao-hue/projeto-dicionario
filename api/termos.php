@@ -6,33 +6,20 @@ header('Content-Type: application/json');
 $method = $_SERVER["REQUEST_METHOD"];
 
 // Captura de parâmetros via GET
-$categoria = isset($_GET['cat']) ? $conn->real_escape_string($_GET['cat']) : '';
-$status_filtro = isset($_GET['status']) ? $conn->real_escape_string($_GET['status']) : 'aprovado';
+// Altere estas linhas no início do termos.php
+$categoria = (isset($_GET['cat']) && $_GET['cat'] !== '') ? $conn->real_escape_string($_GET['cat']) : 'todos';
+$status_filtro = (isset($_GET['status']) && $_GET['status'] !== '') ? $conn->real_escape_string($_GET['status']) : 'pendente';
 
 switch ($method) {
     case "GET":
-        // 1. ROTA PARA BUSCAR UM ÚNICO TERMO PELO ID
-        if (isset($_GET['id'])) {
-            $id = (int)$_GET['id'];
-            $sql = "SELECT termos.*, turmas.nome_turma 
-                    FROM termos 
-                    LEFT JOIN turmas ON termos.turmas_id_turma = turmas.id_turma 
-                    WHERE id_termo = $id";
-            
-            $result = $conn->query($sql);
-            if ($result && $result->num_rows > 0) {
-                echo json_encode(["success" => true, "data" => $result->fetch_assoc()]);
-            } else {
-                echo json_encode(["success" => false, "message" => "Termo não encontrado."]);
-            }
-            exit;
-        }
+        
         // 1. ROTA PARA CONTADORES DO PAINEL ADMIN
+// 1. ROTA PARA CONTADORES DO PAINEL ADMIN
         if (isset($_GET['contar_status'])) {
             $sql = "SELECT 
                         SUM(CASE WHEN status_termo = 'pendente' THEN 1 ELSE 0 END) as pendentes,
                         SUM(CASE WHEN status_termo = 'aprovado' THEN 1 ELSE 0 END) as aprovados,
-                        SUM(CASE WHEN status_termo = 'reprovado' THEN 1 ELSE 0 END) as rejeitados
+                        SUM(CASE WHEN status_termo = 'reprovado' THEN 1 ELSE 0 END) as reprovados
                     FROM termos";
             
             $result = $conn->query($sql);
@@ -43,7 +30,7 @@ switch ($method) {
                 "data" => [
                     "pendente" => (int)$contagens['pendentes'],
                     "aprovado" => (int)$contagens['aprovados'],
-                    "rejeitado" => (int)$contagens['rejeitados']
+                    "reprovado" => (int)$contagens['reprovados'] // Alterado de rejeitado para reprovado
                 ]
             ]);
             exit;
