@@ -45,6 +45,8 @@
     </main>
     <footer><p class="footer_hint">Selecione uma disciplina para começar sua consulta</p></footer>
 
+    <!-- test -->
+
 <script>
         let port = document.getElementById('port');
         let mat = document.getElementById('mat');
