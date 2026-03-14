@@ -42,9 +42,9 @@
                 <a href="#" class="btn_access">Acessar <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
-
-        <p class="footer_hint">Selecione uma disciplina para começar sua consulta</p>
     </main>
+    <footer><p class="footer_hint">Selecione uma disciplina para começar sua consulta</p></footer>
+
 <script>
         let port = document.getElementById('port');
         let mat = document.getElementById('mat');
