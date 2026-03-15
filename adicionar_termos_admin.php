@@ -73,56 +73,58 @@
         </form>
     </main> 
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('file_upload');
-    const fileNameDisplay = document.getElementById('file_name_display');
+    <div class="fab_container">
+        <button id="theme-toggle" class="fab_button" aria-label="Alternar tema">
+            <i class="bi bi-moon-fill" id="theme-icon"></i>
+        </button>
+    </div>
 
-    // 2. Mostrar nome do arquivo selecionado
-    fileInput.addEventListener('change', function() {
-        if (this.files && this.files.length > 0) {
-            fileNameDisplay.innerText = "Selecionado: " + this.files[0].name;
-            fileNameDisplay.style.color = "var(--primary_blue)";
-        }
-    });
+    <script src="./assets/js/script.js"></script>
 
-    // 3. Enviar Formulário com Imagem (FormData)
-    document.getElementById('cadastroTermo').addEventListener('submit', function(e) {
-        e.preventDefault();
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('file_upload');
+        const fileNameDisplay = document.getElementById('file_name_display');
 
-        const btnSubmit = document.querySelector('.btn_submit_form');
-        
-        // O FormData captura automaticamente todos os campos que possuem o atributo "name"
-        // inclusive o arquivo de imagem
-        const formData = new FormData(this);
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                fileNameDisplay.innerText = "Selecionado: " + this.files[0].name;
+                fileNameDisplay.style.color = "var(--primary_blue)";
+            }
+        });
 
-        btnSubmit.disabled = true;
-        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+        document.getElementById('cadastroTermo').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        fetch('api/termos.php', {
-            method: 'POST',
-            body: formData 
-            // IMPORTANTE: Não defina Content-Type no Header quando usar FormData com arquivos!
-            // O navegador fará isso automaticamente como "multipart/form-data"
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Sugestão enviada com sucesso! Aguarde a revisão do professor.');
-                window.location.href = 'index.php';
-            } else {
-                alert('Erro ao enviar: ' + data.message);
+            const btnSubmit = document.querySelector('.btn_submit_form');
+            const formData = new FormData(this);
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+            fetch('api/termos.php', {
+                method: 'POST',
+                body: formData 
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Sugestão enviada com sucesso! Aguarde a revisão do professor.');
+                    window.location.href = 'index.php';
+                } else {
+                    alert('Erro ao enviar: ' + data.message);
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar para Revisão';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro na conexão com o servidor.');
                 btnSubmit.disabled = false;
                 btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar para Revisão';
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert(err +'Erro na conexão com o servidor.');
-            btnSubmit.disabled = false;
+            });
         });
     });
-});
-</script>
+    </script>
 </body>
 </html>

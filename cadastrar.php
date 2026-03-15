@@ -1,7 +1,6 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_usuario'])) {
-    // Se não houver sessão, manda de volta para o login
     header("Location: login.php");
     exit;
 }
@@ -14,41 +13,12 @@ if (!isset($_SESSION['id_usuario'])) {
     <title>Cadastro de Professor - Sistema de Dicionário</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        .custom_select {
-    width: 100%;
-    padding: 12px 16px 12px 48px;
-    border: 1px solid var(--border_gray);
-    border-radius: 12px;
-    background-color: #F9FAFB;
-    font-size: 14px;
-    outline: none;
-    appearance: none; /* Remove a seta padrão */
-    cursor: pointer;
-}
-
-.custom_select:focus {
-    border-color: var(--primary_blue);
-    background-color: var(--white);
-}
-
-/* Adicionando uma setinha customizada para o select */
-.input_group .input_wrapper::after {
-    content: '\f107';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    position: absolute;
-    right: 16px;
-    color: var(--text_muted);
-    pointer-events: none;
-}
-    </style>
 </head>
 <body class="bg_admin">
 
     <header class="header_login">
-        <a href="login.php" class="btn_back_login">
-            <i class="fa-solid fa-arrow-left"></i> Voltar ao login
+        <a href="admin_painel.php" class="btn_back_login">
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao início
         </a>
     </header>
 
@@ -82,7 +52,7 @@ if (!isset($_SESSION['id_usuario'])) {
                     <label for="especializacao">Disciplina de Especialização</label>
                     <div class="input_wrapper">
                         <i class="fa-solid fa-graduation-cap"></i>
-                        <select id="especializacao" class="custom_select" required>
+                        <select id="" class="custom_select" required>
                             <option value="" disabled selected>Selecione a matéria...</option>
                             <option value="port">Português</option>
                             <option value="mat">Matemática</option>
@@ -102,6 +72,10 @@ if (!isset($_SESSION['id_usuario'])) {
             </form>
         </div>
     </main>
+
+    <?php require_once 'assets/layout/bnt_dark.php' ?>
+
+    <script src="./assets/js/script.js"></script>
 
     <script>
         document.getElementById('registerForm').addEventListener('submit', function(e) {

@@ -23,7 +23,6 @@
         <form id="cadastroTermo" enctype="multipart/form-data">
             <section class="form_section_card">
                 <h2 class="section_title_form">Suas Informações</h2>
-                
                 <div class="form_grid_2">
                     <div class="input_group">
                         <label>Seu Nome *</label>
@@ -40,7 +39,6 @@
 
             <section class="form_section_card">
                 <h2 class="section_title_form">Informações do Termo</h2>
-                
                 <div class="input_group">
                     <label>Nome do Termo *</label>
                     <input type="text" name="nome_termo" placeholder="Digite o termo técnico" required>
@@ -90,90 +88,88 @@
         </form>
     </main>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const selectTurma = document.getElementById('selectTurma');
-    const fileInput = document.getElementById('file_upload');
-    const fileNameDisplay = document.getElementById('file_name_display');
+    <?php require_once 'assets/layout/bnt_add_dark.php' ?>
 
-    // 1. Carregar Turmas (Ajustado para api/turmas.php)
-// 1. Carregar Turmas - MUDAMOS PARA turmas.php
-fetch('api/turma.php') 
-    .then(response => {
-        // Isso ajuda a descobrir se o arquivo existe (404) ou deu erro (500)
-        if (!response.ok) {
-            throw new Error('Arquivo não encontrado ou erro no servidor');
+    <script src="./assets/js/script.js"></script>
+
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
         }
-        return response.json();
-    })
-    .then(resultado => {
-        console.log("Dados recebidos da API:", resultado);
-        
-        if (resultado.success && Array.isArray(resultado.data)) {
+
+        document.addEventListener('DOMContentLoaded', function() {
             const selectTurma = document.getElementById('selectTurma');
-            
-            if (resultado.data.length === 0) {
-                selectTurma.innerHTML = '<option value="" disabled selected>Nenhuma turma cadastrada</option>';
-                return;
-            }
+            const fileInput = document.getElementById('file_upload');
+            const fileNameDisplay = document.getElementById('file_name_display');
 
-            selectTurma.innerHTML = '<option value="" disabled selected>Selecione sua turma</option>';
-            resultado.data.forEach(turma => {
-                const option = document.createElement('option');
-                option.value = turma.id_turma;
-                option.textContent = turma.nome_turma;
-                selectTurma.appendChild(option);
+            fetch('api/turma.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Arquivo não encontrado ou erro no servidor');
+                    }
+                    return response.json();
+                })
+                .then(resultado => {
+                    if (resultado.success && Array.isArray(resultado.data)) {
+                        const selectTurma = document.getElementById('selectTurma');
+                        if (resultado.data.length === 0) {
+                            selectTurma.innerHTML = '<option value="" disabled selected>Nenhuma turma cadastrada</option>';
+                            return;
+                        }
+                        selectTurma.innerHTML = '<option value="" disabled selected>Selecione sua turma</option>';
+                        resultado.data.forEach(turma => {
+                            const option = document.createElement('option');
+                            option.value = turma.id_turma;
+                            option.textContent = turma.nome_turma;
+                            selectTurma.appendChild(option);
+                        });
+                    } else {
+                        throw new Error(resultado.message || 'Erro desconhecido na API');
+                    }
+                })
+                .catch(err => {
+                    console.error("Erro detalhado:", err);
+                    document.getElementById('selectTurma').innerHTML = '<option value="" disabled>Erro ao carregar turmas</option>';
+                });
+
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    fileNameDisplay.innerText = "Selecionado: " + this.files[0].name;
+                    fileNameDisplay.style.color = "#007bff";
+                }
             });
-        } else {
-            throw new Error(resultado.message || 'Erro desconhecido na API');
-        }
-    })
-    .catch(err => {
-        console.error("Erro detalhado:", err);
-        document.getElementById('selectTurma').innerHTML = '<option value="" disabled>Erro ao carregar turmas</option>';
-    });
 
-    // 2. Mostrar nome do arquivo selecionado
-    fileInput.addEventListener('change', function() {
-        if (this.files && this.files.length > 0) {
-            fileNameDisplay.innerText = "Selecionado: " + this.files[0].name;
-            fileNameDisplay.style.color = "#007bff"; // Cor de destaque
-        }
-    });
+            document.getElementById('cadastroTermo').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btnSubmit = document.querySelector('.btn_submit_form');
+                const formData = new FormData(this);
 
-    // 3. Enviar Formulário de Termos (Mantido para api/termos.php)
-    document.getElementById('cadastroTermo').addEventListener('submit', function(e) {
-        e.preventDefault();
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
 
-        const btnSubmit = document.querySelector('.btn_submit_form');
-        const formData = new FormData(this);
-
-        btnSubmit.disabled = true;
-        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
-
-        fetch('api/termos.php', {
-            method: 'POST',
-            body: formData 
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Sugestão enviada com sucesso! Aguarde a revisão do professor.');
-                window.location.href = 'index.php';
-            } else {
-                alert('Erro ao enviar: ' + data.message);
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar para Revisão';
-            }
-        })
-        .catch(err => {
-            console.error("Erro na conexão:", err);
-            alert('Erro na conexão com o servidor.');
-            btnSubmit.disabled = false;
-            btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar para Revisão';
+                fetch('api/termos.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Sugestão enviada com sucesso! Aguarde a revisão do professor.');
+                            window.location.href = 'index.php';
+                        } else {
+                            alert('Erro ao enviar: ' + data.message);
+                            btnSubmit.disabled = false;
+                            btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar para Revisão';
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Erro na conexão:", err);
+                        alert('Erro na conexão com o servidor.');
+                        btnSubmit.disabled = false;
+                        btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar para Revisão';
+                    });
+            });
         });
-    });
-});
-</script>
+    </script>
 </body>
 </html>

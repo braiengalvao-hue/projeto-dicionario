@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 
     <header class="navbar_container">
         <div class="logo_group">
@@ -39,25 +44,31 @@
                 </div>
                 <h3 class="card_title">Dicionário de Matemática</h3>
                 <p class="card_description">Explore conceitos de álgebra, geometria e cálculo</p>
-                <a href="#" class="btn_access">Acessar <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="matematica.php" class="btn_access">Acessar <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
     </main>
-    <footer><p class="footer_hint">Selecione uma disciplina para começar sua consulta</p></footer>
 
-    <!-- test -->
+    <?php require_once 'assets/layout/bnt_dark.php' ?>
 
-<script>
-        let port = document.getElementById('port');
-        let mat = document.getElementById('mat');
+    <footer>
+        <p class="footer_hint">Selecione uma disciplina para começar sua consulta</p>
+    </footer>
 
-        port.addEventListener('click', function(){
-            window.location.href = 'portugues.php'; // Adicionado .href e corrigido para atribuição
+    <script src="./assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const port = document.getElementById('port');
+            const mat = document.getElementById('mat');
+
+            port.addEventListener('click', () => {
+                window.location.href = 'portugues.php';
+            });
+
+            mat.addEventListener('click', () => {
+                window.location.href = 'matematica.php';
+            });
         });
-
-        mat.addEventListener('click', function(){
-            window.location.href = 'matematica.php'; // Exemplo para o futuro
-        }); 
-</script>
+    </script>
 </body>
 </html>

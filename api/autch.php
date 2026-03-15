@@ -49,8 +49,12 @@ switch ($method) {
 
             if ($result && $result->num_rows === 1) {
                 $user = $result->fetch_assoc();
+
+                // LOGS PARA TESTE (veja no console do navegador ou log do PHP)
+                error_log("Senha vinda do formulário: " . $data->senha_usuario);
+                error_log("Hash vindo do Banco: " . $user['senha_usuario']);
                 
-                if (password_verify($data->senha_usuario, $user['senha_usuario'])) {
+                if ($data->senha_usuario === $user['senha_usuario']) {
                     $_SESSION['id_usuario'] = $user['id_usuario'];
                     $_SESSION['nome_professor'] = $user['nome_professor'];
                     $_SESSION['especializacao'] = $user['especializacao_professor'];

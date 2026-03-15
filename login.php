@@ -29,7 +29,7 @@
                     <label for="email">E-mail</label>
                     <div class="input_wrapper">
                         <i class="fa-regular fa-envelope"></i>
-                        <input type="email" id="email" placeholder="seu.email@senai.br">
+                        <input type="email" id="email" placeholder="seu.email@senai.br" required>
                     </div>
                 </div>
 
@@ -37,71 +37,68 @@
                     <label for="password">Senha</label>
                     <div class="input_wrapper">
                         <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="password" placeholder="********">
+                        <input type="password" id="password" placeholder="********" required>
                         <i class="fa-regular fa-eye eye_icon"></i>
                     </div>
                 </div>
 
                 <button type="submit" class="btn_login">Entrar</button>
-                            </form>
+            </form>
         </div>
     </main>
-<script>
-document.querySelector('.login_form').addEventListener('submit', function(e) {
-    e.preventDefault(); // Impede a página de recarregar
 
-    // Captura os valores dos inputs
-    const login = document.getElementById('email').value;
-    const senha = document.getElementById('password').value;
-    const btn = document.querySelector('.btn_login');
+    <?php require_once 'assets/layout/bnt_dark.php' ?>
 
-    // Feedback visual de carregamento
-    btn.innerText = "Verificando...";
-    btn.disabled = true;
+    <script src="./assets/js/script.js"></script>
 
-    // Envia os dados para a API
-    fetch('api/autch.php?action=login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            login_usuario: login,
-            senha_usuario: senha
+    <script>
+    document.querySelector('.login_form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const login = document.getElementById('email').value;
+        const senha = document.getElementById('password').value;
+        const btn = document.querySelector('.btn_login');
+
+        btn.innerText = "Verificando...";
+        btn.disabled = true;
+
+        fetch('api/autch.php?action=login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                login_usuario: login,
+                senha_usuario: senha
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Login bem-sucedido: Salva o nome no localStorage (opcional) e redireciona
-            localStorage.setItem('nome_professor', data.user.nome);
-            window.location.href = 'admin_painel.php'; 
-        } else {
-            // Erro no login (senha errada ou usuário não existe)
-            alert(data.message);
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                localStorage.setItem('nome_professor', data.user.nome);
+                window.location.href = 'admin_painel.php'; 
+            } else {
+                alert(data.message);
+                btn.innerText = "Entrar";
+                btn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição:', error);
+            alert('Erro ao conectar com o servidor.');
             btn.innerText = "Entrar";
             btn.disabled = false;
-        }
-    })
-    .catch(error => {
-        console.error('Erro na requisição:', error);
-        alert('Erro ao conectar com o servidor.');
-        btn.innerText = "Entrar";
-        btn.disabled = false;
+        });
     });
-});
 
-// Lógica para mostrar/esconder senha (ícone do olho)
-document.querySelector('.eye_icon').addEventListener('click', function() {
-    const input = document.getElementById('password');
-    if (input.type === 'password') {
-        input.type = 'text';
-        this.classList.replace('fa-eye', 'fa-eye-slash');
-    } else {
-        input.type = 'password';
-        this.classList.replace('fa-eye-slash', 'fa-eye');
-    }
-});
-</script>
+    document.querySelector('.eye_icon').addEventListener('click', function() {
+        const input = document.getElementById('password');
+        if (input.type === 'password') {
+            input.type = 'text';
+            this.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            this.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+    </script>
 </body>
 </html>

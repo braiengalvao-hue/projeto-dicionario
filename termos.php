@@ -9,6 +9,12 @@
 </head>
 <body>
 
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
     <header class="navbar_container">
         <div class="header_left_details">
             <a href="index.php" id="btn_voltar" class="btn_back">
@@ -23,7 +29,7 @@
 
     <main class="details_content">
         <div class="featured_image_container">
-            <img src="assets/images/icon_not_faund.svg" alt="Carregando" class="featured_image">
+            <img src="assets/images/icon_not_found.svg" alt="Carregando" class="featured_image">
         </div>
 
         <section class="info_section">
@@ -32,7 +38,7 @@
                 <h2>Descrição</h2>
             </div>
             <div class="info_card">
-                <p>Buscando informações...</p>
+                <p id="desc-text">Buscando informações...</p>
             </div>
         </section>
 
@@ -42,7 +48,7 @@
                 <h2>Exemplo Prático</h2>
             </div>
             <div class="info_card bg_italic">
-                <p>Buscando exemplo...</p>
+                <p id="ex-text">Buscando exemplo...</p>
             </div>
         </section>
 
@@ -51,118 +57,110 @@
                 <i class="fa-regular fa-user"></i>
             </div>
             <div class="collab_info">
-                <p class="collab_name">Colaboração de: <strong>---</strong></p>
-                <p class="collab_class">Turma: ---</p>
+                <p class="collab_name">Colaboração de: <strong id="student-name">---</strong></p>
+                <p class="collab_class" id="student-class">Turma: ---</p>
             </div>
         </footer>
     </main>
 
-<div id="imageModal" class="modal">
-    <span class="close_modal">&times;</span>
-    <img class="modal_content" id="img01">
-    <div id="caption"></div>
-</div>
+    <?php require_once 'assets/layout/bnt_add_dark.php' ?>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const params = new URLSearchParams(window.location.search);
-    const termoId = params.get('id');
+    <div id="imageModal" class="modal">
+        <span class="close_modal">&times;</span>
+        <img class="modal_content" id="img01">
+        <div id="caption"></div>
+    </div>
 
-    if (!termoId) {
-        window.location.href = 'index.php';
-        return;
-    }
 
-    // Seleção dos elementos do HTML
-    const termTitle = document.querySelector('.term_main_title');
-    const badge = document.querySelector('.badge_category');
-    const btnVoltar = document.getElementById('btn_voltar');
-    const imgElement = document.querySelector('.featured_image');
-    const infoCards = document.querySelectorAll('.info_card p');
-    const collabName = document.querySelector('.collab_name strong');
-    const collabClass = document.querySelector('.collab_class');
 
-    // --- BUSCA DOS DADOS DO TERMO ---
-    fetch(`api/termos.php?id=${termoId}`)
-    .then(response => {
-        if (!response.ok) throw new Error('Erro na rede');
-        return response.json();
-    })
-    .then(res => {
-        console.log("Resposta da API:", res); // Debug para você ver no F12
+    <script src="./assets/js/script.js"></script>
 
-        if (res.success && res.data) {
-            // O segredo está aqui: acessamos res.data, não res.success
-            const termo = res.data;
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const params = new URLSearchParams(window.location.search);
+        const termoId = params.get('id');
 
-            // 1. Título
-            document.title = `${termo.nome_termo} - Dicionário Técnico`;
-            termTitle.innerText = termo.nome_termo;
-
-            // 2. Categoria e Link Voltar
-            if (termo.cat_termo === 'port') {
-                badge.innerText = 'Português';
-                badge.classList.add('port'); // Certifique-se de ter essa cor no CSS
-                btnVoltar.href = 'portugues.php';
-            } else if (termo.cat_termo === 'mat') {
-                badge.innerText = 'Matemática';
-                badge.classList.add('math');
-                btnVoltar.href = 'matematica.php';
-            } else {
-                badge.innerText = 'Geral';
-                btnVoltar.href = 'index.php';
-            }
-
-            // 3. Imagem
-            if (termo.foto_termo) {
-                imgElement.src = `assets/uploads/${termo.foto_termo}`;
-            } else {
-                // Imagem padrão caso não tenha foto
-                imgElement.src = termo.cat_termo === 'port' ? 'assets/images/port_default.png' : 'assets/images/mat_default.png';
-            }
-            imgElement.alt = termo.nome_termo;
-
-            // 4. Descrição e Exemplo
-            // infoCards[0] é a Descrição, infoCards[1] é o Exemplo
-            if (infoCards[0]) infoCards[0].innerText = termo.descricao_termo;
-            if (infoCards[1]) infoCards[1].innerText = termo.exemplo_termo || "Nenhum exemplo prático fornecido.";
-
-            // 5. Rodapé
-            if (collabName) collabName.innerText = termo.nome_aluno || 'Autor Desconhecido';
-            if (collabClass) collabClass.innerText = `Turma: ${termo.nome_turma || 'N/I'}`;
-
-        } else {
-            alert('Termo não encontrado.');
+        if (!termoId) {
             window.location.href = 'index.php';
+            return;
         }
-    })
-    .catch(error => {
-        console.error('Erro detalhado:', error);
-        termTitle.innerText = "Erro ao carregar";
-    });
 
-    // --- LÓGICA DO MODAL DE IMAGEM ---
-    const modal = document.getElementById("imageModal");
-    const modalImg = document.getElementById("img01");
-    const captionText = document.getElementById("caption");
-    const closeBtn = document.querySelector(".close_modal");
+        // Seleção dos elementos
+        const termTitle = document.querySelector('.term_main_title');
+        const badge = document.querySelector('.badge_category');
+        const btnVoltar = document.getElementById('btn_voltar');
+        const imgElement = document.querySelector('.featured_image');
+        const descText = document.getElementById('desc-text');
+        const exText = document.getElementById('ex-text');
+        const collabName = document.getElementById('student-name');
+        const collabClass = document.getElementById('student-class');
 
-    if (imgElement) {
+        // Busca dos dados na API
+        fetch(`api/termos.php?id=${termoId}`)
+            .then(response => response.json())
+            .then(res => {
+                if (res.success && res.data) {
+                    const termo = res.data;
+
+                    // Título e Meta Tag
+                    document.title = `${termo.nome_termo} - Dicionário Técnico`;
+                    termTitle.innerText = termo.nome_termo;
+
+                    // Categoria e Navegação
+                    if (termo.cat_termo === 'port') {
+                        badge.innerText = 'Português';
+                        badge.className = 'badge_category port';
+                        btnVoltar.href = 'portugues.php';
+                    } else if (termo.cat_termo === 'mat') {
+                        badge.innerText = 'Matemática';
+                        badge.className = 'badge_category math';
+                        btnVoltar.href = 'matematica.php';
+                    }
+
+                    // Imagem com fallback
+                    if (termo.foto_termo) {
+                        imgElement.src = `assets/uploads/${termo.foto_termo}`;
+                    } else {
+                        imgElement.src = termo.cat_termo === 'port' ? 'assets/images/port_default.png' : 'assets/images/mat_default.png';
+                    }
+                    imgElement.alt = termo.nome_termo;
+
+                    // Textos
+                    descText.innerText = termo.descricao_termo;
+                    exText.innerText = termo.exemplo_termo || "Nenhum exemplo prático fornecido.";
+
+                    // Créditos
+                    collabName.innerText = termo.nome_aluno || 'Autor Desconhecido';
+                    collabClass.innerText = `Turma: ${termo.nome_turma || 'N/I'}`;
+
+                } else {
+                    alert('Termo não encontrado.');
+                    window.location.href = 'index.php';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                termTitle.innerText = "Erro ao carregar";
+            });
+
+        // Lógica do Modal
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("img01");
+        const captionText = document.getElementById("caption");
+        const closeBtn = document.querySelector(".close_modal");
+
         imgElement.onclick = function() {
             modal.style.display = "block";
             modalImg.src = this.src;
             captionText.innerHTML = this.alt;
         };
-    }
 
-    if (closeBtn) {
         closeBtn.onclick = () => modal.style.display = "none";
-    }
-
-    window.onclick = (event) => {
-        if (event.target == modal) modal.style.display = "none";
-    };
-});
-</script>
+        
+        window.onclick = (event) => {
+            if (event.target == modal) modal.style.display = "none";
+        };
+    });
+    </script>
 </body>
 </html>
