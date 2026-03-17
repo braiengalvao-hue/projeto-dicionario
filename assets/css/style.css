@@ -68,6 +68,36 @@ body.dark-mode .tabs_container {
   background-color: #1e293b !important;
 }
 
+/* =============================================
+   AJUSTES PARA TEMA ESCURO (DARK MODE)
+   ============================================= */
+
+body.dark-mode .filter_wrapper {
+  background-color: #1e293b !important; /* Azul escuro/cinza */
+  border-color: #334155 !important;
+  color: #06b6d4 !important;
+}
+
+body.dark-mode #selectTurma {
+  background-color: transparent !important;
+  color: #06b6d4 !important;
+}
+
+body.dark-mode #selectTurma option {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  padding: 10px;
+}
+
+body.dark-mode #selectTurma option:hover {
+  background-color: #06b6d4 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .filter_wrapper i {
+  color: #06b6d4 !important;
+}
+
 .admin_summary_grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -511,6 +541,13 @@ footer {
   margin-bottom: 8px;
 }
 
+.term_card p {
+  word-wrap: break-word; /* Força quebra de palavras gigantes */
+  word-break: break-all; /* Garante quebra em qualquer ponto */
+  overflow-wrap: anywhere; /* Compatibilidade moderna */
+  white-space: normal;
+}
+
 .term_card:hover {
   border-color: var(--primary_blue);
   box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
@@ -538,6 +575,10 @@ footer {
   font-size: 18px;
   color: var(--text_dark);
   margin: 0;
+  word-wrap: break-word; /* Força quebra de palavras gigantes */
+  word-break: break-all; /* Garante quebra em qualquer ponto */
+  overflow-wrap: anywhere; /* Compatibilidade moderna */
+  white-space: normal;
 }
 
 .term_info p {
@@ -563,6 +604,13 @@ footer {
   align-items: center;
 }
 
+.header_left_details h1 {
+  word-wrap: break-word; /* Força quebra de palavras gigantes */
+  word-break: break-all; /* Garante quebra em qualquer ponto */
+  overflow-wrap: anywhere; /* Compatibilidade moderna */
+  white-space: normal;
+}
+
 .header_title {
   display: flex;
   flex-direction: column;
@@ -573,11 +621,15 @@ footer {
 
 .badge_category {
   background-color: var(--primary_blue);
+  width: 10%;
+  height: 25px;
   color: var(--white);
-  padding: 5px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .term_main_title {
@@ -596,6 +648,10 @@ footer {
 .featured_image_container {
   width: 100%;
   margin-bottom: 30px;
+  object-fit: cover;
+
+  /* OPCIONAL: Centraliza a imagem caso ela seja cortada */
+  object-position: center;
 }
 
 .featured_image {
@@ -611,6 +667,13 @@ footer {
   border: 1px solid var(--border_gray);
   padding: 12px 10px;
   border-radius: 8px;
+}
+
+.info_section p {
+  word-wrap: break-word; /* Força quebra de palavras gigantes */
+  word-break: break-all; /* Garante quebra em qualquer ponto */
+  overflow-wrap: anywhere; /* Compatibilidade moderna */
+  white-space: normal;
 }
 
 .section_title_wrapper {
@@ -1030,12 +1093,10 @@ textarea {
 }
 
 .suggestion_body {
-  border-top: 1px solid #f2f4f7;
-  padding-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 2%;
+  padding-top: 2%;
 }
 
 .suggestion_actions {
@@ -1378,6 +1439,47 @@ body.dark-mode {
   --bg-tab-active: #334155; /* Fundo da aba selecionada */
 }
 
+/* =============================================
+   CARDS NO TEMA ESCURO (DARK MODE)
+   ============================================= */
+
+body.dark-mode .suggestion_card {
+  background-color: #1e293b !important; /* Mesma cor do seu filter_wrapper */
+  border: 1px solid #334155 !important; /* Borda sutil para dar profundidade */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Títulos e textos principais */
+body.dark-mode .suggestion_card h2,
+body.dark-mode .suggestion_card h4 {
+  color: #f1f5f9 !important; /* Branco acinzentado */
+}
+
+/* Subtítulos e Metadados (Enviado por, Turma, Data) */
+body.dark-mode .collab_meta,
+body.dark-mode .date_meta,
+body.dark-mode .content_block p {
+  color: #94a3b8 !important; /* Cinza claro para leitura confortável */
+}
+
+/* Destaque para o nome do autor */
+body.dark-mode .collab_meta strong {
+  color: #06b6d4 !important; /* O ciano que você usa no filtro */
+}
+
+/* Estilização da área de descrição e exemplo */
+body.dark-mode .example_text {
+  background-color: #0f172a !important; /* Fundo ainda mais escuro para destaque */
+  color: #cbd5e1 !important;
+  border-left: 3px solid #06b6d4 !important;
+  padding: 10px !important;
+}
+
+/* Ajuste das Badges (Matemática/Português) no escuro */
+body.dark-mode .badge_category_alt {
+  color: #f1f5f9 !important;
+}
+
 #theme-icon,
 #add {
   width: 28px;
@@ -1455,15 +1557,228 @@ body.dark-mode {
   outline: none;
 }
 
-.custom_select {
-  width: 100%;
-  padding: 12px 16px 12px 45px !important;
+/* Container que segura Foto + Textos */
+.suggestion_content_wrapper {
+  display: flex;
+  gap: 20px;
+  padding: 15px 0;
+  border-top: 1px solid #f2f4f7;
+  margin: 10px 0;
+  align-items: flex-start; /* Alinha o topo da foto com o topo do texto */
+}
+
+/* Área da Foto */
+.suggestion_image_admin img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  display: block;
+}
+
+/* Coluna de Textos (Descrição e Exemplo) */
+.suggestion_body_text {
+  flex: 1; /* Faz o texto ocupar todo o espaço restante */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.content_block h4 {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+/* ==========================================
+   CONFIGURAÇÕES DE LAYOUT E QUEBRA DE TEXTO
+   ========================================== */
+
+/* Garante que textos longos (sem espaços) quebrem e não estourem o card */
+.content_block p {
+  font-size: 14px;
+  color: #1d2939;
+  margin: 0;
+  line-height: 1.5;
+  word-wrap: break-word; /* Força quebra de palavras gigantes */
+  word-break: break-all; /* Garante quebra em qualquer ponto */
+  overflow-wrap: anywhere; /* Compatibilidade moderna */
+  white-space: normal;
+}
+
+/* Impede que o container do texto cresça infinitamente no flexbox */
+.suggestion_body_text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0; /* CRÍTICO: permite que o texto quebre corretamente */
+}
+
+/* ==========================================
+   FILTRO DE TURMAS (O BOTÃO NOVO)
+   ========================================== */
+
+.filter_row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px 15px 20px;
+  margin-top: 10px;
+}
+
+.filter_wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 8px 15px;
+  border-radius: 10px;
+  border: 1px solid #eaecf0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s;
+}
+
+.filter_wrapper:hover {
+  border-color: #d0d5dd;
+}
+
+.filter_wrapper select {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #344054;
+  cursor: pointer;
+  background: transparent;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+/* ==========================================
+   ESTRUTURA DO CARD DE SUGESTÃO
+   ========================================== */
+
+.suggestion_card {
+  background: #fff;
+  border: 1px solid #eaecf0;
   border-radius: 12px;
-  appearance: none;
-  -webkit-appearance: none;
-  background-color: #f9fafb;
-  position: relative;
-  z-index: 1;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.1);
+}
+
+.suggestion_content_wrapper {
+  display: flex;
+  gap: 20px;
+  padding: 15px 0;
+  border-top: 1px solid #f2f4f7;
+  margin-top: 15px;
+  align-items: flex-start;
+}
+
+/* Imagem do Termo no Admin */
+.suggestion_image_admin img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid #eaecf0;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.suggestion_image_admin img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.content_block h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #667085;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.example_text {
+  font-style: italic;
+  color: #475467 !important;
+}
+
+.admin_toolbar {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 15px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+#selectTurma {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+  color: #344054;
+  font-weight: 600;
+  padding: 5px;
+  font-family: inherit;
+}
+
+/* Ajuste para evitar que textos longos quebrem o card */
+.content_block p {
+  word-wrap: break-word !important;
+  word-break: break-all !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+.suggestion_body_text {
+  min-width: 0;
+  flex: 1;
+}
+
+/* ==========================================
+   RESPONSIVIDADE (PARA CELULAR)
+   ========================================== */
+
+@media (max-width: 850px) {
+  .admin_toolbar {
+    flex-direction: column !important;
+    align-items: center !important;
+    margin-bottom: 10px !important; /* Diminui a distância para o card */
+  }
+  .filter_wrapper {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .suggestion_content_wrapper {
+    flex-direction: column; /* Foto em cima, texto embaixo no celular */
+  }
+
+  .suggestion_image_admin img {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #000;
+  }
+
+  .filter_row {
+    justify-content: center;
+  }
+
+  .filter_wrapper {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* =============================================
@@ -1573,57 +1888,80 @@ body.dark-mode {
   }
 }
 
-@media (max-width: 480px) {
-  .welcome_title {
-    font-size: 24px;
+@media (max-width: 600px) {
+  .suggestion_content_wrapper {
+    flex-direction: column !important;
+    gap: 0 !important; /* Remove espaço entre imagem e texto */
   }
-
-  .login_professor {
-    padding: 8px 12px;
-    font-size: 12px;
-  }
-
-  .card_actions_container button span,
-  .suggestion_actions button span,
-  .btn_approve span,
-  .btn_edit span,
-  .btn_reject span {
-    display: none !important;
-  }
-
-  .fab_container {
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column-reverse;
-    gap: 15px;
-  }
-
-  .fab_button {
-    width: 50px;
-    height: 50px;
-  }
-
-  .suggestion_actions button span {
-    display: none !important;
-  }
-
-  .suggestion_actions button {
-    width: 42px;
-    height: 42px;
-    padding: 0 !important;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: auto !important;
-  }
-
-  .suggestion_actions button i {
+  .suggestion_image_admin {
+    width: 100% !important;
     margin: 0 !important;
-    font-size: 22px;
+    padding: 0 !important; /* Remove folgas internas */
   }
 
-  .tabs_container {
-    margin-bottom: 5%;
+  .suggestion_image_admin img {
+    width: 100% !important;
+    height: auto !important; /* Mantém a proporção da imagem */
+    max-height: 250px; /* Limita a altura para não ficar gigante */
+    object-fit: cover; /* Faz a imagem preencher o espaço sem distorcer */
+    border-radius: 8px !important; /* Arredonda só em cima se quiser */
+    border: none !important;
+    display: block;
+    margin-bottom: 3%;
+  }
+
+  @media (max-width: 480px) {
+    .welcome_title {
+      font-size: 24px;
+    }
+
+    .login_professor {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .card_actions_container button span,
+    .suggestion_actions button span,
+    .btn_approve span,
+    .btn_edit span,
+    .btn_reject span {
+      display: none !important;
+    }
+
+    .fab_container {
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 15px;
+    }
+
+    .fab_button {
+      width: 50px;
+      height: 50px;
+    }
+
+    .suggestion_actions button span {
+      display: none !important;
+    }
+
+    .suggestion_actions button {
+      width: 42px;
+      height: 42px;
+      padding: 0 !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: auto !important;
+    }
+
+    .suggestion_actions button i {
+      margin: 0 !important;
+      font-size: 22px;
+    }
+
+    .tabs_container {
+      margin-bottom: 5%;
+    }
   }
 }

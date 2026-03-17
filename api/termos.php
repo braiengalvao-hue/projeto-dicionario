@@ -14,7 +14,7 @@ $categoria = (isset($_GET['cat']) && $_GET['cat'] !== '') ? $conn->real_escape_s
 $status_filtro = (isset($_GET['status']) && $_GET['status'] !== '') ? $conn->real_escape_string($_GET['status']) : 'pendente';
 
 switch ($method) {
-    case "GET":
+case "GET":
         // 1. BUSCA POR ID (Página de Detalhes)
         if (isset($_GET['id'])) {
             $id = (int)$_GET['id'];
@@ -56,10 +56,25 @@ switch ($method) {
             exit;
         }
 
-        // 3. LISTAGEM GERAL
+        // 3. LISTAGEM GERAL COM FILTRO DE TURMA
+        // Captura o id_turma ou nome da turma vindo do select
+        $turma_filtro = (isset($_GET['turma']) && $_GET['turma'] !== 'todos') ? $conn->real_escape_string($_GET['turma']) : '';
+
         $where = "WHERE 1=1";
-        if ($status_filtro !== '') $where .= " AND status_termo = '$status_filtro'";
-        if ($categoria !== 'todos' && $categoria !== '') $where .= " AND cat_termo = '$categoria'";
+        if ($status_filtro !== '') {
+            $where .= " AND status_termo = '$status_filtro'";
+        }
+        if ($categoria !== 'todos' && $categoria !== '') {
+            $where .= " AND cat_termo = '$categoria'";
+        }
+        
+        // NOVA LÓGICA: Se o filtro de turma foi enviado, adiciona ao WHERE
+        if ($turma_filtro !== '') {
+            // Se você estiver passando o NOME da turma no select:
+            $where .= " AND turmas.nome_turma = '$turma_filtro'";
+            // Se você estiver passando o ID da turma no select, use a linha abaixo:
+            // $where .= " AND termos.turmas_id_turma = '$turma_filtro'";
+        }
 
         $sql = "SELECT termos.*, turmas.nome_turma 
                 FROM termos 
@@ -70,11 +85,13 @@ switch ($method) {
         $result = $conn->query($sql);
         $termos = [];
         if ($result) {
-            while ($row = $result->fetch_assoc()) { $termos[] = $row; }
+            while ($row = $result->fetch_assoc()) { 
+                $termos[] = $row; 
+            }
         }
         echo json_encode(["success" => true, "data" => $termos]);
         break;
-
+        
 case "POST":
         // 1. Captura de dados de texto
         $nome_termo = $conn->real_escape_string($_POST['nome_termo'] ?? '');
