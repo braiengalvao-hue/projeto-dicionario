@@ -169,8 +169,8 @@ if (!isset($_SESSION['id_usuario'])) {
                     <div class="suggestion_card">
                         <div class="suggestion_header">
                             <div class="term_title_row">
-                                <h2>${termo.nome_termo}</h2>
                                 <span class="badge_category_alt ${catClass}"><i class="material-icons">${catIcon}</i> ${catLabel}</span>
+                                <h2>${termo.nome_termo}</h2>
                             </div>
                             <p class="collab_meta">Por: <strong>${termo.nome_aluno}</strong> | ${termo.nome_turma || 'Turma N/I'}</p>
                             <p class="date_meta">Enviado em: ${dataF}</p>
