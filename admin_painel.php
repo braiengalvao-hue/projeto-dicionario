@@ -105,183 +105,224 @@ if (!isset($_SESSION['id_usuario'])) {
     <script src="./assets/js/script.js"></script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const listContainer = document.querySelector('.list_container');
-        const tabs = document.querySelectorAll('.tab_btn');
-        const modal = document.getElementById('editModal');
-        const imgModal = document.getElementById('imageModal');
-        const editForm = document.getElementById('editForm');
-        const selectTurma = document.getElementById('selectTurma');
+
+ document.addEventListener('DOMContentLoaded', function() {
+    const listContainer = document.querySelector('.list_container');
+    const tabs = document.querySelectorAll('.tab_btn');
+    const modal = document.getElementById('editModal');
+    const imgModal = document.getElementById('imageModal');
+    const editForm = document.getElementById('editForm');
+    const selectTurma = document.getElementById('selectTurma');
+    
+    let statusAtual = 'pendente'; 
+
+    // 1. CARREGAR TURMAS NO SELECT
+    function carregarFiltroTurmas() {
+        fetch('api/turma.php')
+            .then(res => res.json())
+            .then(resultado => {
+                if (resultado.success && Array.isArray(resultado.data)) {
+                    selectTurma.innerHTML = '<option value="todos">Todas as Turmas</option>';
+                    resultado.data.forEach(turma => {
+                        const option = document.createElement('option');
+                        option.value = turma.nome_turma;
+                        option.textContent = turma.nome_turma;
+                        selectTurma.appendChild(option);
+                    });
+                }
+            })
+            .catch(err => console.error("Erro ao carregar turmas:", err));
+    }
+
+    // 2. CARREGAR LISTA DE TERMOS
+    function carregarTermosAdmin(status) {
+        statusAtual = status; 
+        const turmaValue = selectTurma.value;
+        listContainer.innerHTML = '<p style="text-align:center; padding:20px;">Buscando dados...</p>';
         
-        let statusAtual = 'pendente'; 
+        fetch(`api/termos.php?status=${status}&cat=todos&turma=${turmaValue}`) 
+            .then(res => res.json())
+            .then(resultado => renderizarSugestoes(resultado.data))
+            .catch(() => listContainer.innerHTML = '<p style="text-align:center; padding:20px;">Erro de conexão com o servidor.</p>');
+    }
 
-        // 1. CARREGAR TURMAS NO SELECT (USANDO api/turma.php)
-        function carregarFiltroTurmas() {
-            fetch('api/turma.php')
-                .then(res => res.json())
-                .then(resultado => {
-                    if (resultado.success && Array.isArray(resultado.data)) {
-                        selectTurma.innerHTML = '<option value="todos">Todas as Turmas</option>';
-                        resultado.data.forEach(turma => {
-                            const option = document.createElement('option');
-                            option.value = turma.nome_turma; // Valor usado no filtro SQL
-                            option.textContent = turma.nome_turma; // Nome exibido
-                            selectTurma.appendChild(option);
-                        });
-                    }
-                })
-                .catch(err => console.error("Erro ao carregar turmas:", err));
+    // 3. RENDERIZAR OS CARDS COM LÓGICA DE BOTÕES POR STATUS
+    function renderizarSugestoes(termos) {
+        listContainer.innerHTML = '';
+        if (!termos || termos.length === 0) {
+            listContainer.innerHTML = `<p style="padding:40px; text-align:center; color: #666;">Nenhum termo encontrado nesta categoria.</p>`;
+            return;
         }
 
-        // 2. CARREGAR LISTA DE TERMOS
-        function carregarTermosAdmin(status) {
-            statusAtual = status; 
-            const turmaValue = selectTurma.value;
-            listContainer.innerHTML = '<p style="text-align:center; padding:20px;">Buscando dados...</p>';
-            
-            fetch(`api/termos.php?status=${status}&cat=todos&turma=${turmaValue}`) 
-                .then(res => res.json())
-                .then(resultado => renderizarSugestoes(resultado.data))
-                .catch(() => listContainer.innerHTML = '<p style="text-align:center; padding:20px;">Erro de conexão com o servidor.</p>');
-        }
+        termos.forEach(termo => {
+            const dataF = termo.data_criacao ? new Date(termo.data_criacao).toLocaleDateString('pt-BR') : '---';
+            const catClass = termo.cat_termo === 'mat' ? 'math' : 'port';
+            const catIcon = termo.cat_termo === 'mat' ? 'calculate' : 'menu_book';
+            const catLabel = termo.cat_termo === 'mat' ? 'Matemática' : 'Português';
 
-        // 3. RENDERIZAR OS CARDS NA TELA
-        function renderizarSugestoes(termos) {
-            listContainer.innerHTML = '';
-            if (!termos || termos.length === 0) {
-                listContainer.innerHTML = `<p style="padding:40px; text-align:center; color: #666;">Nenhumm termo encontrado para essa turma.</p>`;
-                return;
+            let fotoHTML = termo.foto_termo ? `<div class="suggestion_image_admin"><img src="assets/uploads/${termo.foto_termo}" onclick="abrirImagemModal(this.src, '${termo.nome_termo}')"></div>` : '';
+
+            // --- DEFINIÇÃO DOS BOTÕES BASEADO NO STATUS ---
+            let botoesHTML = '';
+
+            if (statusAtual === 'pendente') {
+                // Pendente mostra: Aprovar, Editar e Excluir
+                botoesHTML = `
+                    <button class="btn_approve" onclick="alterarStatus(${termo.id_termo}, 'aprovado')"><i class="material-icons">check_circle</i> <span>Aprovar</span></button>
+                    <button class="btn_edit_outline" onclick='abrirEdicao(${JSON.stringify(termo)})'><i class="material-icons">edit</i> <span>Editar</span></button>
+                    <button class="btn_reject_outline" onclick="excluirTermo(${termo.id_termo})"><i class="material-icons">delete_forever</i> <span>Excluir</span></button>
+                `;
+            } 
+            else if (statusAtual === 'aprovado') {
+                // Aprovado mostra: Editar (Atualizar) e Excluir
+                botoesHTML = `
+                    <button class="btn_edit_outline" onclick='abrirEdicao(${JSON.stringify(termo)})'><i class="material-icons">edit</i> <span>Atualizar</span></button>
+                    <button class="btn_reject_outline" onclick="excluirTermo(${termo.id_termo})"><i class="material-icons">delete_forever</i> <span>Excluir</span></button>
+                `;
+            } 
+            else if (statusAtual === 'reprovado') {
+                // Rejeitado mostra: Aprovar ou Editar
+                botoesHTML = `
+                    <button class="btn_approve" onclick="alterarStatus(${termo.id_termo}, 'aprovado')"><i class="material-icons">check_circle</i> <span>Aprovar</span></button>
+                    <button class="btn_edit_outline" onclick='abrirEdicao(${JSON.stringify(termo)})'><i class="material-icons">edit</i> <span>Editar</span></button>
+                `;
             }
 
-            termos.forEach(termo => {
-                const dataF = termo.data_criacao ? new Date(termo.data_criacao).toLocaleDateString('pt-BR') : '---';
-                const catClass = termo.cat_termo === 'mat' ? 'math' : 'port';
-                const catIcon = termo.cat_termo === 'mat' ? 'calculate' : 'menu_book';
-                const catLabel = termo.cat_termo === 'mat' ? 'Matemática' : 'Português';
-
-                let fotoHTML = termo.foto_termo ? `<div class="suggestion_image_admin"><img src="assets/uploads/${termo.foto_termo}" onclick="abrirImagemModal(this.src, '${termo.nome_termo}')"></div>` : '';
-
-                let botoesHTML = statusAtual !== 'aprovado' ? `<button class="btn_approve" onclick="alterarStatus(${termo.id_termo}, 'aprovado')"><i class="material-icons">check_circle</i> <span>Aprovar</span></button>` : '';
-                botoesHTML += `<button class="btn_edit_outline" onclick='abrirEdicao(${JSON.stringify(termo)})'><i class="material-icons">edit</i> <span>Editar</span></button>`;
-                botoesHTML += `<button class="btn_reject_outline" onclick="excluirTermo(${termo.id_termo})"><i class="material-icons">delete_forever</i> <span>Excluir</span></button>`;
-
-                const card = `
-                    <div class="suggestion_card">
-                        <div class="suggestion_header">
-                            <div class="term_title_row">
-                                <span class="badge_category_alt ${catClass}"><i class="material-icons">${catIcon}</i> ${catLabel}</span>
-                                <h2>${termo.nome_termo}</h2>
-                            </div>
-                            <p class="collab_meta">Por: <strong>${termo.nome_aluno}</strong> | ${termo.nome_turma || 'Turma N/I'}</p>
-                            <p class="date_meta">Enviado em: ${dataF}</p>
+            const card = `
+                <div class="suggestion_card">
+                    <div class="suggestion_header">
+                        <div class="term_title_row">
+                            <span class="badge_category_alt ${catClass}"><i class="material-icons">${catIcon}</i> ${catLabel}</span>
+                            <h2>${termo.nome_termo}</h2>
                         </div>
-                        <div class="suggestion_content_wrapper">
-                            ${fotoHTML}
-                            <div class="suggestion_body_text">
-                                <div class="content_block"><h4>Descrição:</h4><p>${termo.descricao_termo}</p></div>
-                                <div class="content_block"><h4>Exemplo:</h4><p class="example_text">${termo.exemplo_termo || '---'}</p></div>
-                            </div>
+                        <p class="collab_meta">Por: <strong>${termo.nome_aluno}</strong> | ${termo.nome_turma || 'Turma N/I'}</p>
+                        <p class="date_meta">Enviado em: ${dataF}</p>
+                    </div>
+                    <div class="suggestion_content_wrapper">
+                        ${fotoHTML}
+                        <div class="suggestion_body_text">
+                            <div class="content_block"><h4>Descrição:</h4><p>${termo.descricao_termo}</p></div>
+                            <div class="content_block"><h4>Exemplo:</h4><p class="example_text">${termo.exemplo_termo || '---'}</p></div>
                         </div>
-                        <div class="suggestion_actions">${botoesHTML}</div>
-                    </div>`;
-                listContainer.insertAdjacentHTML('beforeend', card);
-            });
-        }
-
-        // 4. ATUALIZAR NÚMEROS DO PAINEL (PENDENTES, APROVADAS...)
-        function atualizarResumoPainel() {
-            fetch('api/termos.php?contar_status=true')
-                .then(res => res.json())
-                .then(res => {
-                    if (res.success) {
-                        const d = res.data;
-                        const repro = d.reprovado || 0;
-                        document.querySelector('.summary_card.pending .count').innerText = d.pendente;
-                        document.querySelector('.summary_card.approved .count').innerText = d.aprovado;
-                        document.querySelector('.summary_card.rejected .count').innerText = repro;
-                        
-                        tabs[0].querySelector('.tab_text').innerText = `Pendentes (${d.pendente})`;
-                        tabs[1].querySelector('.tab_text').innerText = `Aprovadas (${d.aprovado})`;
-                        tabs[2].querySelector('.tab_text').innerText = `Rejeitadas (${repro})`;
-                    }
-                });
-        }
-
-        // --- LISTENERS DE EVENTOS ---
-
-        // Filtrar ao mudar a turma
-        selectTurma.addEventListener('change', () => carregarTermosAdmin(statusAtual));
-
-        // Mudar de aba (Pendentes, Aprovadas, Rejeitadas)
-        tabs.forEach((tab, index) => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                const estados = ['pendente', 'aprovado', 'reprovado'];
-                carregarTermosAdmin(estados[index]);
-            });
+                    </div>
+                    <div class="suggestion_actions">${botoesHTML}</div>
+                </div>`;
+            listContainer.insertAdjacentHTML('beforeend', card);
         });
+    }
 
-        // --- FUNÇÕES DE AÇÃO (GLOBAIS) ---
+    // 4. ATUALIZAR CONTADORES DO PAINEL
+    function atualizarResumoPainel() {
+        fetch('api/termos.php?contar_status=true')
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    const d = res.data;
+                    const repro = d.reprovado || 0;
+                    document.querySelector('.summary_card.pending .count').innerText = d.pendente;
+                    document.querySelector('.summary_card.approved .count').innerText = d.aprovado;
+                    document.querySelector('.summary_card.rejected .count').innerText = repro;
+                    
+                    tabs[0].querySelector('.tab_text').innerText = `Pendentes (${d.pendente})`;
+                    tabs[1].querySelector('.tab_text').innerText = `Aprovadas (${d.aprovado})`;
+                    tabs[2].querySelector('.tab_text').innerText = `Rejeitadas (${repro})`;
+                }
+            });
+    }
 
-        window.alterarStatus = function(id, novoStatus) {
-            if(!confirm(`Deseja aprovar este termo?`)) return;
-            fetch('api/termos.php', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_termo: id, status_termo: novoStatus, acao: 'mudar_status' })
-            }).then(() => { carregarTermosAdmin(statusAtual); atualizarResumoPainel(); });
-        };
+    // --- EVENTOS ---
 
-        window.excluirTermo = function(id) {
-            if(!confirm("Deseja excluir permanentemente esta sugestão?")) return;
-            fetch('api/termos.php', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_termo: id })
-            }).then(() => { carregarTermosAdmin(statusAtual); atualizarResumoPainel(); });
-        };
+    selectTurma.addEventListener('change', () => carregarTermosAdmin(statusAtual));
 
-        window.abrirEdicao = function(termo) {
-            document.getElementById('edit_title').value = termo.nome_termo;
-            document.getElementById('edit_description').value = termo.descricao_termo;
-            document.getElementById('edit_example').value = termo.exemplo_termo;
-            editForm.dataset.id = termo.id_termo;
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        };
-
-        window.closeEditModal = () => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; };
-
-        editForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            fetch('api/termos.php', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_termo: this.dataset.id,
-                    nome_termo: document.getElementById('edit_title').value,
-                    descricao_termo: document.getElementById('edit_description').value,
-                    exemplo_termo: document.getElementById('edit_example').value,
-                    acao: 'editar_conteudo'
-                })
-            }).then(() => { closeEditModal(); carregarTermosAdmin(statusAtual); });
+    tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const estados = ['pendente', 'aprovado', 'reprovado'];
+            carregarTermosAdmin(estados[index]);
         });
+    });
 
-        window.abrirImagemModal = function(src, titulo) {
-            imgModal.style.display = "flex";
-            document.getElementById("img01").src = src;
-            // document.getElementById("caption").innerText = titulo;
-            document.body.style.overflow = 'hidden';
-        };
+// --- FUNÇÕES GLOBAIS ---
+    window.abrirImagemModal = function(src, titulo) {
+        imgModal.style.display = "flex";
+        document.getElementById("img01").src = src;
+        // document.getElementById("caption").innerText = titulo;
+        document.body.style.overflow = 'hidden';
+    };
+    window.alterarStatus = function(id, novoStatus) {
+        if(!confirm(`Deseja alterar o status deste termo para ${novoStatus}?`)) return;
+        fetch('api/termos.php', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_termo: id, status_termo: novoStatus, acao: 'mudar_status' })
+        }).then(() => { 
+            carregarTermosAdmin(statusAtual); 
+            atualizarResumoPainel(); 
+        });
+    };
 
-        window.closeImageModal = () => { imgModal.style.display = "none"; document.body.style.overflow = 'auto'; };
+    window.excluirTermo = function(id) {
+        if(!confirm("Deseja excluir permanentemente esta sugestão?")) return;
+        fetch('api/termos.php', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_termo: id })
+        }).then(() => { 
+            carregarTermosAdmin(statusAtual); 
+            atualizarResumoPainel(); 
+        });
+    };
 
-        // --- INICIALIZAÇÃO ---
-        carregarFiltroTurmas();
-        atualizarResumoPainel();
-        carregarTermosAdmin('pendente');
-    }); 
+    window.abrirEdicao = function(termo) {
+        document.getElementById('edit_title').value = termo.nome_termo;
+        document.getElementById('edit_description').value = termo.descricao_termo;
+        document.getElementById('edit_example').value = termo.exemplo_termo;
+        editForm.dataset.id = termo.id_termo;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeEditModal = () => { 
+        modal.style.display = 'none'; 
+        document.body.style.overflow = 'auto'; 
+    };
+
+    editForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch('api/termos.php', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_termo: this.dataset.id,
+                nome_termo: document.getElementById('edit_title').value,
+                descricao_termo: document.getElementById('edit_description').value,
+                exemplo_termo: document.getElementById('edit_example').value,
+                acao: 'editar_conteudo'
+            })
+        }).then(() => { 
+            closeEditModal(); 
+            carregarTermosAdmin(statusAtual); 
+        });
+    });
+
+    window.abrirImagemModal = function(src, titulo) {
+        imgModal.style.display = "flex";
+        document.getElementById("img01").src = src;
+        document.getElementById("caption").innerText = titulo;
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeImageModal = () => { 
+        imgModal.style.display = "none"; 
+        document.body.style.overflow = 'auto'; 
+    };
+
+    // --- INICIALIZAÇÃO ---
+    carregarFiltroTurmas();
+    atualizarResumoPainel();
+    carregarTermosAdmin('pendente');
+});
     </script>
 </body>
 </html>

@@ -1,12 +1,13 @@
 <?php
 session_start();
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
-    exit;
-}
+// if (!isset($_SESSION['id_usuario'])) {
+//     header("Location: login.php");
+//     exit;
+// }
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@ if (!isset($_SESSION['id_usuario'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body class="bg_admin">
 
     <header class="header_login">
@@ -27,7 +29,7 @@ if (!isset($_SESSION['id_usuario'])) {
             <div class="icon_circle_login">
                 <i class="fa-solid fa-user-plus"></i>
             </div>
-            
+
             <h1 class="login_title">Novo Professor</h1>
             <p class="login_subtitle">Crie uma conta para moderar termos</p>
 
@@ -52,7 +54,7 @@ if (!isset($_SESSION['id_usuario'])) {
                     <label for="especializacao">Disciplina de Especialização</label>
                     <div class="input_wrapper">
                         <i class="fa-solid fa-graduation-cap"></i>
-                        <select id="" class="custom_select" required>
+                        <select id="especializacao" class="custom_select" required>
                             <option value="" disabled selected>Selecione a matéria...</option>
                             <option value="port">Português</option>
                             <option value="mat">Matemática</option>
@@ -91,33 +93,36 @@ if (!isset($_SESSION['id_usuario'])) {
             btn.disabled = true;
 
             fetch('api/autch.php?action=register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nome_professor: nome,
-                    login_usuario: login,
-                    especializacao_professor: espec,
-                    senha_usuario: senha
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nome_professor: nome,
+                        login_usuario: login,
+                        especializacao_professor: espec,
+                        senha_usuario: senha
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Cadastro realizado com sucesso! Agora você pode fazer login.");
-                    window.location.href = 'login.php';
-                } else {
-                    alert("Erro: " + data.message);
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Cadastro realizado com sucesso! Agora você pode fazer login.");
+                        window.location.href = 'login.php';
+                    } else {
+                        alert("Erro: " + data.message);
+                        btn.innerText = "Criar Conta";
+                        btn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert("Erro ao conectar com o servidor.");
                     btn.innerText = "Criar Conta";
                     btn.disabled = false;
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert("Erro ao conectar com o servidor.");
-                btn.innerText = "Criar Conta";
-                btn.disabled = false;
-            });
+                });
         });
     </script>
 </body>
+
 </html>
