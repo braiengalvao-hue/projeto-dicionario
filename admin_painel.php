@@ -271,7 +271,7 @@ if (!isset($_SESSION['id_usuario'])) {
         window.abrirImagemModal = function(src, titulo) {
             imgModal.style.display = "flex";
             document.getElementById("img01").src = src;
-            document.getElementById("caption").innerText = titulo;
+            // document.getElementById("caption").innerText = titulo;
             document.body.style.overflow = 'hidden';
         };
 
