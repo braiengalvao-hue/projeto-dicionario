@@ -619,23 +619,11 @@ footer {
 
 .header_title {
   display: flex;
+  width: 100%;
   flex-direction: column;
   justify-content: start;
   gap: 4px;
   margin-left: 3%;
-}
-
-.badge_category {
-  background-color: var(--primary_blue);
-  width: 10%;
-  height: 25px;
-  color: var(--white);
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .term_main_title {
@@ -1093,11 +1081,6 @@ textarea {
   margin-bottom: 8px;
 }
 
-.badge_category_alt.math {
-  background-color: #f5f3ff;
-  color: #6d28d9;
-}
-
 .suggestion_body {
   display: flex;
   flex-direction: column;
@@ -1283,6 +1266,19 @@ textarea {
   flex-direction: row;
   gap: 16px;
   z-index: 9999;
+}
+
+.badge_category {
+  background-color: var(--primary_blue);
+  width: 10%;
+  height: 25px;
+  color: var(--white);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .fab_button {
@@ -1851,6 +1847,7 @@ body.dark-mode .badge_category_alt {
 
   .header_title {
     margin-left: 10px;
+    border: 1px solid #000;
   }
 
   .term_main_title {
